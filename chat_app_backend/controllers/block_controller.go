@@ -29,10 +29,22 @@ func BlockUser(c *gin.Context) {
 
 func UnblockUser(c *gin.Context) {
 	blockerID := c.GetUint("user_id")
-	blockedID, _ := strconv.ParseUint(c.Param("user_id"), 10, 32)
+	blockedID, err := strconv.ParseUint(c.Param("user_id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
 
-	if err := config.DB.Where("blocker_id = ? AND blocked_id = ?", blockerID, blockedID).Delete(&models.Block{}).Error; err != nil {
+	// Attempt to delete the block record
+	result := config.DB.Unscoped().Where("blocker_id = ? AND blocked_id = ?", blockerID, blockedID).Delete(&models.Block{})
+	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unblock user"})
+		return
+	}
+
+	// Check if any record was deleted
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No block record found for this user"})
 		return
 	}
 

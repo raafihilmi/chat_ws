@@ -66,7 +66,7 @@ func readPump(client *websockets.Client) {
 
 		var chatMessage models.Chat
 		if err := json.Unmarshal(message, &chatMessage); err != nil {
-			log.Printf("error: %v", err)
+			log.Printf("error chat: %v", err)
 			continue
 		}
 
