@@ -1,4 +1,3 @@
-import 'package:chat_app_client/pages/login_page.dart';
 import 'package:chat_app_client/themes/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,10 +17,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Chat App',
       debugShowCheckedModeBanner: false,
-      home: LoginPage(onTap: () {
-
-      },),
+      home: Blank(),
       theme: Provider.of<ThemeProvider>(context).themeData,
     );
   }
 }
+
+class Blank extends StatelessWidget {
+  const Blank({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
