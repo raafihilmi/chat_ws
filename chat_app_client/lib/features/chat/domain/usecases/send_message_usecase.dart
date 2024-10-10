@@ -11,7 +11,7 @@ class SendMessageUseCase implements UseCase<void, SendMessageParams>{
   SendMessageUseCase(this.repository);
 
   @override
-  Future<Either<Failure, Message>> call(SendMessageParams params) async {
+  Future<Either<Failure, void>> call(SendMessageParams params) async {
     return await repository.sendMessage(params.receiverId, params.message);
   }
 }
