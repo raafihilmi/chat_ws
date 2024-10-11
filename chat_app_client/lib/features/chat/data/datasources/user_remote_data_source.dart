@@ -1,6 +1,3 @@
-
-import 'package:chat_app_client/features/chat/domain/entities/user.dart';
-
 import '../../../../core/api/api_consumer.dart';
 import '../models/user_models.dart';
 
@@ -16,6 +13,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   @override
   Future<List<UserModel>> getAvailableUsers() async {
     final response = await apiConsumer.getAvailableUsers();
-    return response.map((data) => UserModel.fromJson(data as Map<String, dynamic>)).toList();
-  }
+    return response.map((data) =>
+        UserModel(id: data.id,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+            username: data.username,
+            email: data.email)).toList();
+    }
 }

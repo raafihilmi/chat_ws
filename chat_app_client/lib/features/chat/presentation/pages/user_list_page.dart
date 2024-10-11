@@ -9,14 +9,15 @@ class UserListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Available Users')),
+      appBar: AppBar(title: const Text('Available Users')),
       body: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
           if (state is UserInitial) {
-            BlocProvider.of<UserBloc>(context).add(const GetAvailableUsersEvent());
-            return Center(child: CircularProgressIndicator());
+            BlocProvider.of<UserBloc>(context)
+                .add(const GetAvailableUsersEvent());
+            return const Center(child: CircularProgressIndicator());
           } else if (state is UserLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (state is UserLoaded) {
             return ListView.builder(
               itemCount: state.users.length,
@@ -31,7 +32,7 @@ class UserListPage extends StatelessWidget {
           } else if (state is UserError) {
             return Center(child: Text('Error: ${state.message}'));
           }
-          return Center(child: Text('Unknown state'));
+          return const Center(child: Text('Unknown state'));
         },
       ),
     );

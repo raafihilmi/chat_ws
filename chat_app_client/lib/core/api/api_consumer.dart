@@ -56,7 +56,7 @@ class ApiConsumer {
 
   Future<List<UserModel>> getAvailableUsers() async {
     final token = await _getToken();
-    log(token!, name: "getAvailableUsers");
+    log(token ?? 'Gak ada token', name: "getAvailableUsers");
     final response = await http.get(
       Uri.parse('$baseUrl/users/available'),
       headers: {'Authorization': 'Bearer $token'},

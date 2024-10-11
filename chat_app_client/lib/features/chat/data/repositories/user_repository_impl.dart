@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failures.dart';
@@ -16,6 +18,7 @@ class UserRepositoryImpl implements UserRepository {
       final remoteUsers = await remoteDataSource.getAvailableUsers();
       return Right(remoteUsers);
     } catch (e) {
+      log(e.toString());
       return Left(ServerFailure());
     }
   }
