@@ -23,6 +23,8 @@ func SetupRoutes(r *gin.Engine) {
 		api.DELETE("/block/:user_id", controllers.UnblockUser)
 		api.GET("/block", controllers.GetBlockedUsers)
 
+		api.GET("/users/available", controllers.GetAllUsersExceptBlockedUsers)
+
 		api.POST("/report/user/:user_id", controllers.ReportUser)
 		api.POST("/report/message/:message_id", controllers.ReportMessage)
 
