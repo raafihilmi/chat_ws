@@ -1,3 +1,4 @@
+import 'package:chat_app_client/core/api/api_consumer.dart';
 import 'package:chat_app_client/features/chat/data/datasources/chat_websocket_service.dart';
 import 'package:chat_app_client/features/chat/data/models/message_model.dart';
 
@@ -14,27 +15,21 @@ abstract class ChatRemoteDataSource {
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
+  final ApiConsumer apiConsumer;
   final ChatWebsocketService _websocketService;
 
-  ChatRemoteDataSourceImpl(this._websocketService);
+  ChatRemoteDataSourceImpl(this.apiConsumer, this._websocketService);
 
   @override
-  Future<List<MessageModel>> getChatHistory(int userId) {
-    // nanti pas set API
-    throw UnimplementedError();
+  Future<List<MessageModel>> getChatHistory(int userId) async{
+    final response = await apiConsumer.getChatHistory(userId);
+    return response.map((data) => MessageModel.fromJson(data)).toList();
   }
 
   @override
   Future<MessageModel> sendMessage(int receiverId, String message) async {
-    final newMessage = MessageModel(
-      senderId: 1,
-      receiverId: receiverId,
-      message: message,
-      isRead: false,
-      createdAt: DateTime.now(),
-    );
-    _websocketService.sendMessage(newMessage);
-    return newMessage;
+    final response = await apiConsumer.sendMessage(receiverId, message);
+    return MessageModel.fromJson(response);
   }
 
   @override
