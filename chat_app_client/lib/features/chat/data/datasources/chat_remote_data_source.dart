@@ -1,47 +1,43 @@
+import 'dart:convert';
+
 import 'package:chat_app_client/core/api/api_consumer.dart';
-import 'package:chat_app_client/features/chat/data/datasources/chat_websocket_service.dart';
-import 'package:chat_app_client/features/chat/data/models/message_model.dart';
+
+import '../../domain/entities/message.dart';
 
 abstract class ChatRemoteDataSource {
-  Stream<MessageModel> get messageStream;
+  Stream<Message> connectToChat(int currentUserId, int otherUserId);
 
-  Future<List<MessageModel>> getChatHistory(int userId);
-
-  Future<MessageModel> sendMessage(int receiverId, String message);
-
-  void connect();
-
-  void disconnect();
+  Future<void> sendMessage(Message message);
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   final ApiConsumer apiConsumer;
-  final ChatWebsocketService _websocketService;
 
-  ChatRemoteDataSourceImpl(this.apiConsumer, this._websocketService);
+  ChatRemoteDataSourceImpl(this.apiConsumer);
 
   @override
-  Future<List<MessageModel>> getChatHistory(int userId) async{
-    final response = await apiConsumer.getChatHistory(userId);
-    return response.map((data) => MessageModel.fromJson(data)).toList();
+  Stream<Message> connectToChat(int currentUserId, int otherUserId) {
+    return apiConsumer.connectWebSocket().asStream().asyncExpand((wsChannel) {
+      return wsChannel.stream.map((event) {
+        final data = json.decode(event);
+        return Message(
+          senderId: data['sender_id'],
+          receiverId: data['receiver_id'],
+          message: data['message'],
+          isRead: data['is_read'],
+        );
+      });
+    });
   }
 
   @override
-  Future<MessageModel> sendMessage(int receiverId, String message) async {
-    final response = await apiConsumer.sendMessage(receiverId, message);
-    return MessageModel.fromJson(response);
+  Future<void> sendMessage(Message message) async {
+    final wsChannel = await apiConsumer.connectWebSocket();
+    wsChannel.sink.add(json.encode({
+      'sender_id': message.senderId,
+      'receiver_id': message.receiverId,
+      'message': message.message,
+      'is_read': message.isRead,
+    }));
   }
-
-  @override
-  void connect() {
-    _websocketService.connect();
-  }
-
-  @override
-  void disconnect() {
-    _websocketService.disconnect();
-  }
-
-  @override
-  Stream<MessageModel> get messageStream => _websocketService.messageStream;
 }

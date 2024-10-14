@@ -1,10 +1,16 @@
+
+import 'dart:developer';
+
 import 'package:chat_app_client/features/chat/domain/entities/message.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key}) : super(key: key);
+
+  const ChatPage({
+    super.key,
+  });
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -12,83 +18,93 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
+  final List<Message> _messages = [];
+  late int? userData;
 
   @override
   void initState() {
     super.initState();
-    context.read<ChatBloc>().add(const LoadChatHistory(userId: 1));
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    userData = ModalRoute.of(context)?.settings.arguments as int?;
+
+    if (userData != null) {
+      BlocProvider.of<ChatBloc>(context).add(
+        ConnectToChatEvent(100, userData!),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat'),
-      ),
-      body: BlocBuilder<ChatBloc, ChatState>(
-        builder: (context, state) {
-          if (state is ChatLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (state is ChatLoaded) {
-            return Column(
-              children: [
-                Expanded(
-                    child: ListView.builder(
-                      itemCount: state.message.length,
-                      itemBuilder: (context, index) {
-                        return _buildMessageBubble(state.message[index]);
-                      },
-                    )),
-                _buildMessageInput(),
-              ],
-            );
-          } else if (state is ChatError) {
-            return Center(
-              child: Text(state.message),
-            );
-          }
-          return const Center(
-            child: Text('Star a conversation'),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildMessageBubble(Message message) {
-    return Align(
-      alignment: message.senderId == 1 ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: message.senderId == 1 ? Colors.blue[100] : Colors.grey[300],
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(message.message),
-      ),
-    );
-  }
-
-  Widget _buildMessageInput() {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Row(
+      appBar: AppBar(title: Text('Chat')),
+      body: Column(
         children: [
           Expanded(
-              child: TextField(
-                controller: _messageController,
-                decoration: const InputDecoration(hintText: 'Type a message'),
-              )),
-          IconButton(onPressed: () {
-            if (_messageController.text.isNotEmpty) {
-              context.read<ChatBloc>().add(SendMessage(
-                  receiverId: 2, message: _messageController.text));
-              _messageController.clear();
-            }
-          }, icon: const Icon(Icons.send))
+            child: BlocConsumer<ChatBloc, ChatState>(
+              listener: (context, state) {
+                if (state is ChatConnected) {
+                  log(state.toString(), name: 'ChatPage');
+                }
+                if (state is MessageReceived) {
+                  setState(() {
+                    log(state.message.message, name: 'ChatPage');
+                    _messages.add(state.message);
+                  });
+                } else if (state is ChatError) {
+                  log(state.message);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message)),
+                  );
+                }
+              },
+              builder: (context, state) {
+                return ListView.builder(
+                  itemCount: _messages.length,
+                  itemBuilder: (context, index) {
+                    final message = _messages[index];
+                    log(message.message, name: 'ChatPage');
+                    return ListTile(
+                      title: Text(message.message),
+                      subtitle: Text(message.senderId == 100 ? 'You' : 'Other'),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    decoration: InputDecoration(hintText: 'Type a message'),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: () {
+                    if (_messageController.text.isNotEmpty && userData != null) {
+                      final message = Message(
+                        senderId: 100,
+                        receiverId: userData!,
+                        message: _messageController.text,
+                        isRead: false,
+                      );
+                      BlocProvider.of<ChatBloc>(context).add(SendMessageEvent(message));
+                      _messageController.clear();
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

@@ -4,8 +4,26 @@ abstract class ChatEvent extends Equatable {
   const ChatEvent();
 
   @override
-  // TODO: implement props
   List<Object?> get props => [];
+}
+
+class ConnectToChatEvent extends ChatEvent {
+  final int currentUserId;
+  final int otherUserId;
+
+  const ConnectToChatEvent(this.currentUserId, this.otherUserId);
+
+  @override
+  List<Object> get props => [currentUserId, otherUserId];
+}
+
+class SendMessageEvent extends ChatEvent {
+  final Message message;
+
+  const SendMessageEvent(this.message);
+
+  @override
+  List<Object> get props => [message];
 }
 
 class LoadChatHistory extends ChatEvent {
@@ -16,15 +34,4 @@ class LoadChatHistory extends ChatEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [userId];
-}
-
-class SendMessage extends ChatEvent {
-  final int receiverId;
-  final String message;
-
-  const SendMessage({required this.receiverId, required this.message});
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [receiverId, message];
 }

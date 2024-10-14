@@ -2,49 +2,41 @@ import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chat_app_client/features/chat/domain/entities/message.dart';
-import 'package:chat_app_client/features/chat/domain/usecases/get_chat_history_usecase.dart';
-import 'package:chat_app_client/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:equatable/equatable.dart';
+
+import '../../domain/usecases/connect_to-cat.dart';
+import '../../domain/usecases/send_message.dart';
 
 part 'chat_event.dart';
 
 part 'chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
-  final GetChatHistoryUseCase getChatHistoryUseCase;
-  final SendMessageUseCase sendMessageUseCase;
+  final ConnectToChat connectToChat;
+  final SendMessage sendMessage;
 
-  ChatBloc(
-      {required this.getChatHistoryUseCase, required this.sendMessageUseCase})
-      : super(ChatInitial()) {
-    on<LoadChatHistory>(_onLoadChatHistory);
-    on<SendMessage>(_onSendMessage);
-  }
+  ChatBloc(this.connectToChat, this.sendMessage) : super(ChatInitial()) {
+    on<ConnectToChatEvent>((event, emit) async {
+      emit(ChatLoading());
+      try {
+        await emit.forEach<Message>(
+          connectToChat.execute(event.currentUserId, event.otherUserId),
+          onData: (message) {
+            log('Message received: ${message.message}');
+            return MessageReceived(message);
+          },
+        );
+      } catch (e) {
+        emit(ChatError('Failed to connect to chat'));
+      }
+    });
 
-  Future<void> _onLoadChatHistory(
-      LoadChatHistory event, Emitter<ChatState> emit) async {
-    emit(ChatLoading());
-    final result = await getChatHistoryUseCase(event.userId);
-    log(result as String, name: "LOADCHAT");
-    result.fold(
-      (failure) =>
-          emit(ChatError(message: 'Failed to load chat history: $failure')),
-      (message) => emit(ChatLoaded(message: message)),
-    );
-  }
-
-  Future<void> _onSendMessage(
-      SendMessage event, Emitter<ChatState> emit) async {
-    final currentState = state;
-    if (currentState is ChatLoaded) {
-      final result = await sendMessageUseCase(SendMessageParams(
-          receiverId: event.receiverId, message: event.message));
+    on<SendMessageEvent>((event, emit) async {
+      final result = await sendMessage.execute(event.message);
       result.fold(
-        (failure) =>
-            emit(ChatError(message: 'Failed to send message: $failure')),
-        (sentMessage) => emit(ChatLoaded(
-            message: List.from(currentState.message)..add(sentMessage))),
+        (failure) => emit(ChatError('Failed to send message')),
+        (_) => emit(state),
       );
-    }
+    });
   }
 }

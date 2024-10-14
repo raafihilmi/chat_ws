@@ -22,4 +22,27 @@ class UserRepositoryImpl implements UserRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, void>> blockUser(int blockedUserId) async {
+    try {
+      final blockUser = await remoteDataSource.blockUser(blockedUserId);
+      return Right(blockUser);
+    } catch(e) {
+      log(e.toString());
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> reportUser(String reason, int reportedUserId) async {
+    try {
+      final reportedUser = await remoteDataSource.reportUser(reason, reportedUserId);
+      return Right(reportedUser);
+    } catch (e) {
+      log(e.toString());
+      return Left(ServerFailure());
+    }
+  }
+
 }

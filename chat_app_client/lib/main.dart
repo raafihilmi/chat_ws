@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
           initialRoute: '/login',
           routes: {
             '/login': (context) => LoginPage(),
-            '/chat': (context) => const ChatPage(),
+            '/chat': (context) => ChatPage(),
             '/users': (context) => UserListPage()
           },
         ));

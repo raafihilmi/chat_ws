@@ -1,13 +1,17 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:chat_app_client/features/chat/domain/entities/message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/io.dart';
 
 import '../../features/chat/data/models/user_models.dart';
 
 class ApiConsumer {
-  final String baseUrl = 'http://192.168.1.217:8080/api';
+  final String baseUrl = 'http://192.168.20.101:8080/api';
+  final String wsUrl = 'ws://192.168.20.101:8080/ws';
+  IOWebSocketChannel? _channel;
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -21,11 +25,9 @@ class ApiConsumer {
 
   Future<Map<String, dynamic>> login(String username, password) async {
     log('$baseUrl/auth/login', name: "LOGIN API: ");
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'username': username, 'password': password})
-    );
+    final response = await http.post(Uri.parse('$baseUrl/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'username': username, 'password': password}));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -36,16 +38,12 @@ class ApiConsumer {
     }
   }
 
-  Future<Map<String, dynamic>> register(String username, password, email) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/register'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'username': username,
-        'password': password,
-        'email': email
-      })
-    );
+  Future<Map<String, dynamic>> register(
+      String username, password, email) async {
+    final response = await http.post(Uri.parse('$baseUrl/auth/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(
+            {'username': username, 'password': password, 'email': email}));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -70,20 +68,15 @@ class ApiConsumer {
     }
   }
 
-
   Future<List<Map<String, dynamic>>> getChatHistory(int userId) async {
     final token = await _getToken();
     log(token!, name: "ChatAPI");
-    final response = await http.get(
-      Uri.parse('$baseUrl/chats/$userId'),
-      headers: {
-        'Authorization': 'Bearer $token'
-      }
-    );
+    final response = await http.get(Uri.parse('$baseUrl/chats/$userId'),
+        headers: {'Authorization': 'Bearer $token'});
 
     log(response as String, name: "ChatHist");
 
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.cast<Map<String, dynamic>>();
     } else {
@@ -91,23 +84,53 @@ class ApiConsumer {
     }
   }
 
-  Future<Map<String, dynamic>> sendMessage(int receiverId, String message) async {
+  Future<Map<String, dynamic>> sendMessage(
+      int receiverId, String message) async {
     final token = await _getToken();
-    final response = await http.post(
-      Uri.parse('$baseUrl/chats'),
-      headers: {
-        'Authorization': 'Bearer $token'
-      },
-      body: json.encode({
-        'receiver_id': receiverId,
-        'message': message,
-      })
-    );
+    final response = await http.post(Uri.parse('$baseUrl/chats'),
+        headers: {'Authorization': 'Bearer $token'},
+        body: json.encode({
+          'receiver_id': receiverId,
+          'message': message,
+        }));
 
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
       throw Exception('Failed to send message');
     }
+  }
+
+  Future<void> blockUser(int blockedUserId) async {
+    final token = await _getToken();
+    final response = await http.post(Uri.parse('$baseUrl/block/$blockedUserId'),
+        headers: {'Authorization': 'Bearer $token'});
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to BlockUser');
+    }
+  }
+
+  Future<void> reportUser(String reason,int reportedUserId) async {
+    final token = await _getToken();
+    final response = await http.post(
+        Uri.parse('$baseUrl/report/user/$reportedUserId'),
+        headers: {'Authorization': 'Bearer $token'},
+    body: json.encode({'reason': reason}));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to report user');
+    }
+  }
+
+  Future<IOWebSocketChannel> connectWebSocket() async {
+    final token = await _getToken();
+
+    return IOWebSocketChannel.connect(
+      Uri.parse(wsUrl),
+      headers: {'Authorization': 'Bearer $token'},
+    );
   }
 }

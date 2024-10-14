@@ -28,3 +28,12 @@ class UserError extends UserState {
   @override
   List<Object> get props => [message];
 }
+
+class UserActionSuccess extends UserState {
+  final String message;
+
+  const UserActionSuccess({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}

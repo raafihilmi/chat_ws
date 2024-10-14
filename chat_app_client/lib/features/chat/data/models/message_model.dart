@@ -6,13 +6,11 @@ class MessageModel extends Message {
     required int receiverId,
     required String message,
     required bool isRead,
-    required DateTime createdAt,
   }) : super(
     senderId: senderId,
     receiverId: receiverId,
     message: message,
     isRead: isRead,
-    createdAt: createdAt,
   );
 
   factory MessageModel.fromJson(Map<String, dynamic> json) {
@@ -21,7 +19,6 @@ class MessageModel extends Message {
       receiverId: json['receiver_id'],
       message: json['message'],
       isRead: json['is_read'],
-      createdAt: DateTime.parse(json['created_at']),
     );
   }
 
@@ -31,7 +28,6 @@ class MessageModel extends Message {
       'receiver_id': receiverId,
       'message': message,
       'is_read': isRead,
-      'created_at': createdAt.toIso8601String(),
     };
   }
 }
