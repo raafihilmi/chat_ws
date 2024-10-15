@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:chat_app_client/features/chat/domain/entities/message.dart';
@@ -7,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatPage extends StatefulWidget {
-
   const ChatPage({
     super.key,
   });
@@ -20,6 +18,7 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final List<Message> _messages = [];
   late int? userData;
+  late int? userId;
 
   @override
   void initState() {
@@ -29,12 +28,18 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    userData = ModalRoute.of(context)?.settings.arguments as int?;
+    final Map<String, dynamic>? arguments =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
-    if (userData != null) {
+    if (arguments != null) {
+      userId = arguments['userId'];
+      userData = arguments['selectedUser'];
+      log('Connecting to chat with user: $userData');
       BlocProvider.of<ChatBloc>(context).add(
-        ConnectToChatEvent(100, userData!),
+        ConnectToChatEvent(userId!, userData!),
       );
+    } else {
+      log('Error: userData is null');
     }
   }
 
@@ -51,14 +56,14 @@ class _ChatPageState extends State<ChatPage> {
                   log(state.toString(), name: 'ChatPage');
                 }
                 if (state is MessageReceived) {
+                  log(state.message.message, name: 'ChatPage');
                   setState(() {
-                    log(state.message.message, name: 'ChatPage');
                     _messages.add(state.message);
                   });
                 } else if (state is ChatError) {
-                  log(state.message);
+                  log(state.message, name: 'ChatPage Error');
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
+                    SnackBar(content: Text(state.message)),
                   );
                 }
               },
@@ -67,10 +72,13 @@ class _ChatPageState extends State<ChatPage> {
                   itemCount: _messages.length,
                   itemBuilder: (context, index) {
                     final message = _messages[index];
-                    log(message.message, name: 'ChatPage');
+                    log(message.message, name: 'ChatPage build');
+                    log(message.receiverId.toString(), name: 'RecID');
+                    log(userData.toString(), name: 'udID');
                     return ListTile(
                       title: Text(message.message),
-                      subtitle: Text(message.senderId == 100 ? 'You' : 'Other'),
+                      subtitle: Text(
+                          message.receiverId != userData ? 'Other' : 'You'),
                     );
                   },
                 );
@@ -90,14 +98,16 @@ class _ChatPageState extends State<ChatPage> {
                 IconButton(
                   icon: Icon(Icons.send),
                   onPressed: () {
-                    if (_messageController.text.isNotEmpty && userData != null) {
+                    if (_messageController.text.isNotEmpty &&
+                        userData != null) {
                       final message = Message(
-                        senderId: 100,
+                        senderId: userId!,
                         receiverId: userData!,
                         message: _messageController.text,
                         isRead: false,
                       );
-                      BlocProvider.of<ChatBloc>(context).add(SendMessageEvent(message));
+                      BlocProvider.of<ChatBloc>(context)
+                          .add(SendMessageEvent(message));
                       _messageController.clear();
                     }
                   },

@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:chat_app_client/core/api/api_consumer.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<String> login(String username, password);
+  Future<Map<String, dynamic>> login(String username, password);
 
   Future<void> register(String username, password, email);
 }
@@ -14,10 +14,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthRemoteDataSourceImpl(this.apiConsumer);
 
   @override
-  Future<String> login(String username, password) async {
+  Future<Map<String, dynamic>> login(String username, password) async {
     final response = await apiConsumer.login(username, password);
     log(response['token'], name: "TokenDS");
-    return response['token'];
+    log(response['user_id'].toString(), name: "UserIDDS");
+    return {
+      'token': response['token'],
+      'user_id': response['user_id'],
+    };
   }
 
   @override

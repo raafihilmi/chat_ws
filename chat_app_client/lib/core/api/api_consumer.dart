@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:chat_app_client/features/chat/domain/entities/message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/io.dart';
@@ -9,8 +8,8 @@ import 'package:web_socket_channel/io.dart';
 import '../../features/chat/data/models/user_models.dart';
 
 class ApiConsumer {
-  final String baseUrl = 'http://192.168.20.101:8080/api';
-  final String wsUrl = 'ws://192.168.20.101:8080/ws';
+  final String baseUrl = 'http://192.168.1.217:8080/api';
+  final String wsUrl = 'ws://192.168.1.217:8080/ws';
   IOWebSocketChannel? _channel;
 
   Future<String?> _getToken() async {
@@ -22,6 +21,16 @@ class ApiConsumer {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_token', token);
   }
+  Future<int?> _getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('auth_uid');
+  }
+
+  Future<void> _saveUserId(int uid) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('auth_uid', uid);
+  }
+
 
   Future<Map<String, dynamic>> login(String username, password) async {
     log('$baseUrl/auth/login', name: "LOGIN API: ");
@@ -32,6 +41,7 @@ class ApiConsumer {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       await _saveToken(data['token']);
+      await _saveUserId(data['user_id']);
       return data;
     } else {
       throw Exception('Failed to login');

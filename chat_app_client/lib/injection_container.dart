@@ -17,7 +17,7 @@ import 'package:get_it/get_it.dart';
 import 'features/chat/data/datasources/user_remote_data_source.dart';
 import 'features/chat/data/repositories/user_repository_impl.dart';
 import 'features/chat/domain/repositories/user_repository.dart';
-import 'features/chat/domain/usecases/connect_to-cat.dart';
+import 'features/chat/domain/usecases/connect_to_chat.dart';
 import 'features/chat/domain/usecases/get_available_users.dart';
 import 'features/chat/domain/usecases/send_message.dart';
 import 'features/chat/presentation/bloc/user_bloc.dart';

@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:chat_app_client/features/chat/domain/entities/user.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserListPage extends StatelessWidget {
   const UserListPage({super.key});
@@ -45,6 +48,13 @@ class UserListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    late int? userId;
+    Future<void> loadUserId() async {
+      final prefs = await SharedPreferences.getInstance();
+      userId = prefs.getInt('auth_uid');
+      log(userId.toString(), name: 'UID');
+    }
+    loadUserId();
     return Scaffold(
       appBar: AppBar(title: const Text('Available Users')),
       body: BlocConsumer<UserBloc, UserState>(
@@ -76,7 +86,10 @@ class UserListPage extends StatelessWidget {
                   title: Text(user.username),
                   subtitle: Text(user.email),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/chat', arguments: user.id);
+                    Navigator.pushNamed(context, '/chat', arguments: {
+                      'selectedUser': user.id,
+                      'userId': userId
+                    });
                   },
                   onLongPress: () => _showBottomSheet(context, user),
                 );
