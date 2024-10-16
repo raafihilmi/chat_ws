@@ -8,9 +8,8 @@ import 'package:web_socket_channel/io.dart';
 import '../../features/chat/data/models/user_models.dart';
 
 class ApiConsumer {
-  final String baseUrl = 'http://192.168.1.217:8080/api';
-  final String wsUrl = 'ws://192.168.1.217:8080/ws';
-  IOWebSocketChannel? _channel;
+  final String baseUrl = 'http://192.168.20.72:8080/api';
+  final String wsUrl = 'ws://192.168.20.72:8080/ws';
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();

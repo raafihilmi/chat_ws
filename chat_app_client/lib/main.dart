@@ -1,4 +1,5 @@
 import 'package:chat_app_client/features/authentication/presentation/bloc/auth_bloc.dart';
+import 'package:chat_app_client/features/authentication/presentation/pages/auth_gate.dart';
 import 'package:chat_app_client/features/authentication/presentation/pages/login_page.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/user_bloc.dart';
@@ -36,8 +37,9 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          initialRoute: '/login',
+          initialRoute: '/auth',
           routes: {
+            '/auth': (context) => AuthGate(),
             '/login': (context) => LoginPage(),
             '/chat': (context) => ChatPage(),
             '/users': (context) => UserListPage()

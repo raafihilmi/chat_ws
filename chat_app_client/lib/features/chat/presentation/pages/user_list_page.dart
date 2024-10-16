@@ -54,16 +54,29 @@ class UserListPage extends StatelessWidget {
       userId = prefs.getInt('auth_uid');
       log(userId.toString(), name: 'UID');
     }
+
     loadUserId();
     return Scaffold(
-      appBar: AppBar(title: const Text('Available Users')),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+          automaticallyImplyLeading: false,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+          title: const Text(
+        'ChatApp',
+        style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.blueAccent),
+      )),
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserActionSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
             );
-            BlocProvider.of<UserBloc>(context).add(const GetAvailableUsersEvent());
+            BlocProvider.of<UserBloc>(context)
+                .add(const GetAvailableUsersEvent());
           } else if (state is UserError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
@@ -83,12 +96,21 @@ class UserListPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final user = state.users[index];
                 return ListTile(
+                  tileColor: Colors.white,
+                  leading: const CircleAvatar(
+                    backgroundColor: Colors.blueGrey,
+                    child: Icon(
+                      Icons.person,
+                      color: Colors.white,
+                    ),
+                  ),
                   title: Text(user.username),
                   subtitle: Text(user.email),
                   onTap: () {
                     Navigator.pushNamed(context, '/chat', arguments: {
                       'selectedUser': user.id,
-                      'userId': userId
+                      'userId': userId,
+                      'username': user.username
                     });
                   },
                   onLongPress: () => _showBottomSheet(context, user),
