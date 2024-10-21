@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chat_app_client/features/chat/domain/entities/message.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../data/datasources/chat_remote_data_source.dart';
-import '../../domain/usecases/connect_to_chat.dart';
-import '../../domain/usecases/send_message.dart';
+import '../../../data/datasources/chat_remote_data_source.dart';
+import '../../../domain/usecases/connect_to_chat.dart';
+import '../../../domain/usecases/send_message.dart';
 
 part 'chat_event.dart';
 

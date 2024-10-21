@@ -12,8 +12,9 @@ import 'package:chat_app_client/features/chat/domain/repositories/chat_repositor
 import 'package:chat_app_client/features/chat/domain/usecases/block_user.dart';
 import 'package:chat_app_client/features/chat/domain/usecases/get_blocked_users.dart';
 import 'package:chat_app_client/features/chat/domain/usecases/report_user.dart';
-import 'package:chat_app_client/features/chat/domain/usecases/unblock-user.dart';
-import 'package:chat_app_client/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:chat_app_client/features/chat/domain/usecases/unblock_user.dart';
+import 'package:chat_app_client/features/chat/presentation/bloc/blockeduser/blockeduser_bloc.dart';
+import 'package:chat_app_client/features/chat/presentation/bloc/chat/chat_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 import 'features/chat/data/datasources/user_remote_data_source.dart';
@@ -22,7 +23,7 @@ import 'features/chat/domain/repositories/user_repository.dart';
 import 'features/chat/domain/usecases/connect_to_chat.dart';
 import 'features/chat/domain/usecases/get_available_users.dart';
 import 'features/chat/domain/usecases/send_message.dart';
-import 'features/chat/presentation/bloc/user_bloc.dart';
+import 'features/chat/presentation/bloc/user/user_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -61,5 +62,6 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SendMessage(sl()));
   sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
   sl.registerLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSourceImpl(sl()));
-  sl.registerFactory(() => UserBloc(getAvailableUsers: sl(), unblockUser: sl(), getBlockedUsers: sl(),blockUser: sl(), reportUser: sl()));
+  sl.registerFactory(() => UserBloc(getAvailableUsers: sl(),blockUser: sl(), reportUser: sl()));
+  sl.registerFactory(() => BlockeduserBloc(unblockUser: sl(), getBlockedUsers: sl()));
 }

@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:chat_app_client/features/chat/domain/entities/message.dart';
-import 'package:chat_app_client/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:chat_app_client/features/chat/presentation/bloc/chat/chat_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

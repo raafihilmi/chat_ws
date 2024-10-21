@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:chat_app_client/core/components/my_drawer.dart';
 import 'package:chat_app_client/features/chat/domain/entities/user.dart';
-import 'package:chat_app_client/features/chat/presentation/bloc/user_bloc.dart';
+import 'package:chat_app_client/features/chat/presentation/bloc/user/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,6 +55,8 @@ class UserListPage extends StatelessWidget {
       userId = prefs.getInt('auth_uid');
       log(userId.toString(), name: 'UID');
     }
+    BlocProvider.of<UserBloc>(context)
+        .add(const GetAvailableUsersEvent());
 
     loadUserId();
     return Scaffold(
@@ -86,11 +88,7 @@ class UserListPage extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          if (state is UserInitial) {
-            BlocProvider.of<UserBloc>(context)
-                .add(const GetAvailableUsersEvent());
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is UserLoading) {
+          if (state is UserLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is UserLoaded) {
             return ListView.builder(

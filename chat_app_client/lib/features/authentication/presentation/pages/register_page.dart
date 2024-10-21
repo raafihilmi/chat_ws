@@ -24,6 +24,12 @@ class RegisterPage extends StatelessWidget {
           password: _passwordController.text,
         ),
       );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registration successful!'),
+          backgroundColor: Colors.green,
+        ),
+      );
     } else {
       showDialog(
           context: context,
@@ -47,7 +53,7 @@ class RegisterPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 //logo
-                SizedBox(height: 40,),
+                const SizedBox(height: 40,),
                 Icon(Icons.message,
                     size: 60, color: Theme
                         .of(context)

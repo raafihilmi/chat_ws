@@ -2,16 +2,15 @@ import 'package:chat_app_client/features/authentication/presentation/bloc/auth_b
 import 'package:chat_app_client/features/authentication/presentation/pages/auth_gate.dart';
 import 'package:chat_app_client/features/authentication/presentation/pages/login_page.dart';
 import 'package:chat_app_client/features/authentication/presentation/pages/register_page.dart';
-import 'package:chat_app_client/features/chat/presentation/bloc/chat_bloc.dart';
-import 'package:chat_app_client/features/chat/presentation/bloc/user_bloc.dart';
+import 'package:chat_app_client/features/chat/presentation/bloc/blockeduser/blockeduser_bloc.dart';
+import 'package:chat_app_client/features/chat/presentation/bloc/chat/chat_bloc.dart';
+import 'package:chat_app_client/features/chat/presentation/bloc/user/user_bloc.dart';
 import 'package:chat_app_client/features/chat/presentation/pages/blocked_users_page.dart';
 import 'package:chat_app_client/features/chat/presentation/pages/chat_page.dart';
 import 'package:chat_app_client/features/chat/presentation/pages/user_list_page.dart';
-import 'package:chat_app_client/themes/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'injection_container.dart' as di;
-import 'package:provider/provider.dart';
 
 void main() async {
   await di.init();
@@ -30,6 +29,9 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider<ChatBloc>(
             create: (context) => di.sl<ChatBloc>(),
+          ),
+          BlocProvider<BlockeduserBloc>(
+            create: (context) => di.sl<BlockeduserBloc>(),
           ),
           BlocProvider<UserBloc>(create: (context) => di.sl<UserBloc>(),)
         ],
