@@ -8,8 +8,8 @@ import 'package:web_socket_channel/io.dart';
 import '../../features/chat/data/models/user_models.dart';
 
 class ApiConsumer {
-  final String baseUrl = 'http://192.168.20.72:8080/api';
-  final String wsUrl = 'ws://192.168.20.72:8080/ws';
+  final String baseUrl = 'http://192.168.20.80:8080/api';
+  final String wsUrl = 'ws://192.168.20.80:8080/ws';
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -66,6 +66,22 @@ class ApiConsumer {
     log(token ?? 'Gak ada token', name: "getAvailableUsers");
     final response = await http.get(
       Uri.parse('$baseUrl/users/available'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = json.decode(response.body);
+      return jsonList.map((json) => UserModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load users list');
+    }
+  }
+
+  Future<List<UserModel>> getBlockedUsers() async {
+    final token = await _getToken();
+    log(token ?? 'Gak ada token', name: "getBlockedUsers");
+    final response = await http.get(
+      Uri.parse('$baseUrl/block'),
       headers: {'Authorization': 'Bearer $token'},
     );
 

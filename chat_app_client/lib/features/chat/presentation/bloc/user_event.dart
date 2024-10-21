@@ -22,6 +22,22 @@ class BlockUserEvent extends UserEvent {
 
   @override
   List<Object> get props => [blockedUserId];
+
+}class GetBlockedUsersEvent extends UserEvent {
+
+  const GetBlockedUsersEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class UnblockUserEvent extends UserEvent {
+  final int unblockedUserId;
+
+  const UnblockUserEvent(this.unblockedUserId);
+
+  @override
+  List<Object> get props => [unblockedUserId];
 }
 
 class ReportUserEvent extends UserEvent {

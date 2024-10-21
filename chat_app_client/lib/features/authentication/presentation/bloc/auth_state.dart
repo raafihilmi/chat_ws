@@ -21,7 +21,14 @@ class AuthAuthenticated extends AuthState {
   List<Object?> get props => [token];
 }
 
-class AuthRegistered extends AuthState {}
+class AuthRegistered extends AuthState {
+  final String message;
+
+  const AuthRegistered({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
 
 class AuthError extends AuthState {
   final String message;

@@ -1,8 +1,10 @@
 import 'package:chat_app_client/features/authentication/presentation/bloc/auth_bloc.dart';
 import 'package:chat_app_client/features/authentication/presentation/pages/auth_gate.dart';
 import 'package:chat_app_client/features/authentication/presentation/pages/login_page.dart';
+import 'package:chat_app_client/features/authentication/presentation/pages/register_page.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/user_bloc.dart';
+import 'package:chat_app_client/features/chat/presentation/pages/blocked_users_page.dart';
 import 'package:chat_app_client/features/chat/presentation/pages/chat_page.dart';
 import 'package:chat_app_client/features/chat/presentation/pages/user_list_page.dart';
 import 'package:chat_app_client/themes/theme_provider.dart';
@@ -41,7 +43,9 @@ class MyApp extends StatelessWidget {
           routes: {
             '/auth': (context) => AuthGate(),
             '/login': (context) => LoginPage(),
+            '/register': (context) => RegisterPage(),
             '/chat': (context) => ChatPage(),
+            '/blocked': (context) => BlockedUsersPage(),
             '/users': (context) => UserListPage()
           },
         ));

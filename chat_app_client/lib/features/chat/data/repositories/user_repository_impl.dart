@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:chat_app_client/features/chat/data/models/user_models.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failures.dart';
@@ -23,6 +24,7 @@ class UserRepositoryImpl implements UserRepository {
     }
   }
 
+
   @override
   Future<Either<Failure, void>> blockUser(int blockedUserId) async {
     try {
@@ -44,5 +46,18 @@ class UserRepositoryImpl implements UserRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<UserModel>>> getBlockedUsers() async {
+    try {
+      final remoteUsers = await remoteDataSource.getBlockedUsers();
+      return Right(remoteUsers);
+    } catch (e) {
+      log(e.toString());
+      return Left(ServerFailure());
+    }
+  }
+
+
 
 }

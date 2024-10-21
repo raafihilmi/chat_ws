@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:chat_app_client/core/components/my_drawer.dart';
 import 'package:chat_app_client/features/chat/domain/entities/user.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
@@ -69,6 +70,7 @@ class UserListPage extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: Colors.blueAccent),
       )),
+        drawer: MyDrawer(),
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserActionSuccess) {

@@ -37,6 +37,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email));
     result.fold(
         (failure) => emit(AuthError(message: 'Registration failed: $failure')),
-        (_) => emit(AuthRegistered()));
+        (r) => emit(const AuthRegistered(message: 'Registration Success')));
   }
 }

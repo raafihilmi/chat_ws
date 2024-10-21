@@ -10,7 +10,9 @@ import 'package:chat_app_client/features/chat/data/datasources/chat_websocket_se
 import 'package:chat_app_client/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:chat_app_client/features/chat/domain/repositories/chat_repository.dart';
 import 'package:chat_app_client/features/chat/domain/usecases/block_user.dart';
+import 'package:chat_app_client/features/chat/domain/usecases/get_blocked_users.dart';
 import 'package:chat_app_client/features/chat/domain/usecases/report_user.dart';
+import 'package:chat_app_client/features/chat/domain/usecases/unblock-user.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -51,11 +53,13 @@ Future<void> init() async {
 
   // feature - user list
   sl.registerLazySingleton(() => GetAvailableUsers(sl()));
+  sl.registerLazySingleton(() => GetBlockedUsers(sl()));
   sl.registerLazySingleton(()=> BlockUser(sl()));
+  sl.registerLazySingleton(()=> UnblockUser(sl()));
   sl.registerLazySingleton(()=> ReportUser(sl()));
   sl.registerLazySingleton(() => ConnectToChat(sl()));
   sl.registerLazySingleton(() => SendMessage(sl()));
   sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
   sl.registerLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSourceImpl(sl()));
-  sl.registerFactory(() => UserBloc(getAvailableUsers: sl(), blockUser: sl(), reportUser: sl()));
+  sl.registerFactory(() => UserBloc(getAvailableUsers: sl(), unblockUser: sl(), getBlockedUsers: sl(),blockUser: sl(), reportUser: sl()));
 }
