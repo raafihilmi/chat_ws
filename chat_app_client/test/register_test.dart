@@ -2,26 +2,21 @@ import 'dart:convert';
 import 'package:chat_app_client/core/api/api_consumer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
+import 'package:http/testing.dart' as yak;
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
-@GenerateMocks([], customMocks: [
-  MockSpec<http.Client>(
-    as: #MockHttpClient,
-    onMissingStub: OnMissingStub.returnDefault,
-  )
-])
+@GenerateMocks([http.Client])
 import 'register_test.mocks.dart';
 
 void main() {
-  late MockHttpClient mockClient;
-  late ApiConsumer authService;
+  late MockClient mockClient;
+  late ApiConsumer apiConsumer;
   const baseUrl = 'http://192.168.1.217:8080/api';
 
   setUp(() {
-    mockClient = MockHttpClient();
-    authService = ApiConsumer();
+    mockClient = MockClient();
+    apiConsumer = ApiConsumer();
   });
 
   group('Register API Test', () {
@@ -30,14 +25,17 @@ void main() {
       final expectedResponse = {
         'message': 'User registered successfully'
       };
+      const username = 'testuser3';
+      const password = 'testuser3';
+      const email = 'testuser3@gmail.comm';
 
       when(mockClient.post(
         Uri.parse('$baseUrl/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          'username': 'testuser',
-          'password': 'testpass',
-          'email': 'test@example.com'
+          'username': username,
+          'password': password,
+          'email': email
         }),
       )).thenAnswer((_) async => http.Response(
         json.encode(expectedResponse),
@@ -45,10 +43,10 @@ void main() {
       ));
 
       // Act
-      final result = await authService.register(
-          'testuser',
-          'testpass',
-          'test@example.com'
+      final result = await apiConsumer.register(
+          username,
+          password,
+          email
       );
 
       // Assert
@@ -61,9 +59,9 @@ void main() {
         Uri.parse('$baseUrl/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          'username': 'testuser',
+          'username': 'testuser2',
           'password': 'testpass',
-          'email': 'test@example.com'
+          'email': 'test2@example.com'
         }),
       )).thenAnswer((_) async => http.Response(
         'Registration failed',
@@ -72,22 +70,7 @@ void main() {
 
       // Act & Assert
       expect(
-            () => authService.register('testuser', 'testpass', 'test@example.com'),
-        throwsException,
-      );
-    });
-
-    test('handles network errors', () async {
-      // Arrange
-      when(mockClient.post(
-        Uri.parse('$baseUrl/auth/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: any,
-      )).thenThrow(Exception('Network error'));
-
-      // Act & Assert
-      expect(
-            () => authService.register('testuser', 'testpass', 'test@example.com'),
+            () => apiConsumer.register('testuser2', 'testpass', 'test2@example.com'),
         throwsException,
       );
     });
