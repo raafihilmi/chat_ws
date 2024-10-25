@@ -12,7 +12,7 @@ import 'register_test.mocks.dart';
 void main() {
   late MockClient mockClient;
   late ApiConsumer apiConsumer;
-  const baseUrl = 'http://192.168.1.217:8080/api';
+  const baseUrl = 'http://192.168.20.76:8080/api';
 
   setUp(() {
     mockClient = MockClient();
@@ -25,9 +25,9 @@ void main() {
       final expectedResponse = {
         'message': 'User registered successfully'
       };
-      const username = 'testuser3';
-      const password = 'testuser3';
-      const email = 'testuser3@gmail.comm';
+      const username = 'testuser4';
+      const password = 'testuser4';
+      const email = 'testuser4@gmail.comm';
 
       when(mockClient.post(
         Uri.parse('$baseUrl/auth/register'),
