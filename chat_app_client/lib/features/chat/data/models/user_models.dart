@@ -27,4 +27,14 @@ class UserModel extends User {
       email: json['email'],
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'ID': id,
+      'CreatedAt': createdAt,
+      'UpdatedAt': updatedAt,
+      'DeletedAt': deletedAt,
+      'username': username,
+      'email': email,
+    };
+  }
 }

@@ -1,18 +1,16 @@
-import 'dart:convert';
 import 'package:chat_app_client/core/api/api_consumer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/testing.dart' as yak;
-import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
+import 'api_helper_test.dart';
 @GenerateMocks([http.Client])
 import 'register_test.mocks.dart';
 
 void main() {
   late MockClient mockClient;
   late ApiConsumer apiConsumer;
-  const baseUrl = 'http://192.168.20.76:8080/api';
+  const endpointRegister = '/auth/register';
 
   setUp(() {
     mockClient = MockClient();
@@ -25,22 +23,11 @@ void main() {
       final expectedResponse = {
         'message': 'User registered successfully'
       };
-      const username = 'testuser4';
-      const password = 'testuser4';
-      const email = 'testuser4@gmail.comm';
+      const username = 'testuser5';
+      const password = 'testuser5';
+      const email = 'testuser5@gmail.comm';
 
-      when(mockClient.post(
-        Uri.parse('$baseUrl/auth/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'username': username,
-          'password': password,
-          'email': email
-        }),
-      )).thenAnswer((_) async => http.Response(
-        json.encode(expectedResponse),
-        200,
-      ));
+      mockHttpResponse(mockClient, endpointRegister, expectedResponse, 200);
 
       // Act
       final result = await apiConsumer.register(
@@ -54,19 +41,7 @@ void main() {
     });
 
     test('throws an exception when registration fails', () async {
-      // Arrange
-      when(mockClient.post(
-        Uri.parse('$baseUrl/auth/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'username': 'testuser2',
-          'password': 'testpass',
-          'email': 'test2@example.com'
-        }),
-      )).thenAnswer((_) async => http.Response(
-        'Registration failed',
-        400,
-      ));
+      mockHttpResponse(mockClient, endpointRegister, {'message': 'Registration failed'}, 400);
 
       // Act & Assert
       expect(

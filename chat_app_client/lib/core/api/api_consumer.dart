@@ -8,8 +8,8 @@ import 'package:web_socket_channel/io.dart';
 import '../../features/chat/data/models/user_models.dart';
 
 class ApiConsumer {
-  final String baseUrl = 'http://192.168.1.217:8080/api';
-  final String wsUrl = 'ws://192.168.1.217:8080/ws';
+  final String baseUrl = 'http://192.168.20.76:8080/api';
+  final String wsUrl = 'ws://192.168.20.76:8080/ws';
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -71,7 +71,7 @@ class ApiConsumer {
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = json.decode(response.body);
-      return jsonList.map((json) => UserModel.fromJson(json)).toList();
+      return jsonList.isEmpty ? [] : jsonList.map((json) => UserModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load users list');
     }
