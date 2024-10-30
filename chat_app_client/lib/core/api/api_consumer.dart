@@ -10,6 +10,9 @@ import '../../features/chat/data/models/user_models.dart';
 class ApiConsumer {
   final String baseUrl = 'http://192.168.20.76:8080/api';
   final String wsUrl = 'ws://192.168.20.76:8080/ws';
+  final http.Client client;
+
+  ApiConsumer({required this.client});
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -33,7 +36,7 @@ class ApiConsumer {
 
   Future<Map<String, dynamic>> login(String username, password) async {
     log('$baseUrl/auth/login', name: "LOGIN API: ");
-    final response = await http.post(Uri.parse('$baseUrl/auth/login'),
+    final response = await client.post(Uri.parse('$baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'username': username, 'password': password}));
 
@@ -64,7 +67,7 @@ class ApiConsumer {
   Future<List<UserModel>> getAvailableUsers() async {
     final token = await _getToken();
     log(token ?? 'Gak ada token', name: "getAvailableUsers");
-    final response = await http.get(
+    final response = await client.get(
       Uri.parse('$baseUrl/users/available'),
       headers: {'Authorization': 'Bearer $token'},
     );

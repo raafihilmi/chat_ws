@@ -30,7 +30,7 @@ final sl = GetIt.instance;
 Future<void> init() async {
   // core
   sl.registerLazySingleton(
-    () => ApiConsumer(),
+    () => ApiConsumer(client: sl()),
   );
 
   // feature = auth

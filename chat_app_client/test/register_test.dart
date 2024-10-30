@@ -14,36 +14,44 @@ void main() {
 
   setUp(() {
     mockClient = MockClient();
-    apiConsumer = ApiConsumer();
+    apiConsumer = ApiConsumer(client: mockClient);
   });
 
   group('Register API Test', () {
     test('returns success response when registration is successful', () async {
-      // Arrange
-      final expectedResponse = {
-        'message': 'User registered successfully'
-      };
-      const username = 'testuser5';
-      const password = 'testuser5';
-      const email = 'testuser5@gmail.comm';
 
-      mockHttpResponse(mockClient, endpointRegister, expectedResponse, 200);
+      final expectedResponse = {'message': 'User registered successfully'};
+      const username = 'testing1';
+      const password = 'testing1';
+      const email = 'testing1@gmail.comm';
 
-      // Act
-      final result = await apiConsumer.register(
-          username,
-          password,
-          email
+      mockHttpResponse(
+        mockClient: mockClient,
+        method: 'POST',
+        url: Uri.parse('${apiConsumer.baseUrl}$endpointRegister'),
+        headers: {'Content-Type': 'application/json'},
+        body: {'username': username, 'password': password, 'email': email},
+        response: expectedResponse,
+        statusCode: 200,
       );
 
-      // Assert
+      final result = await apiConsumer.register(username, password, email);
+
       expect(result, equals(expectedResponse));
     });
 
     test('throws an exception when registration fails', () async {
-      mockHttpResponse(mockClient, endpointRegister, {'message': 'Registration failed'}, 400);
+      final errorResponse = {'message': 'Registration failed'};
+      mockHttpResponse(
+        mockClient: mockClient,
+        method: 'POST',
+        url: Uri.parse('${apiConsumer.baseUrl}$endpointRegister'),
+        headers: {'Content-Type': 'application/json'},
+        body: {'username': 'testuser2', 'password': 'testpass', 'email': 'test2@example.com'},
+        response: errorResponse,
+        statusCode: 400,
+      );
 
-      // Act & Assert
       expect(
             () => apiConsumer.register('testuser2', 'testpass', 'test2@example.com'),
         throwsException,

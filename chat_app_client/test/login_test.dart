@@ -23,14 +23,20 @@ void main() {
 
   setUp(() {
     mockClient = MockClient();
-    apiConsumer = ApiConsumer();
+    apiConsumer = ApiConsumer(client: mockClient);
     SharedPreferences.setMockInitialValues({});
   });
 
   group('Login API Test', () {
-
     test('Successful login stores token and user_id in preferences', () async {
-      mockHttpResponse(mockClient, loginEndpoint, expectedResponse, 200);
+      mockHttpResponse(
+        mockClient: mockClient,
+        method: 'POST',
+        url: Uri.parse('${apiConsumer.baseUrl}$loginEndpoint'),
+        headers: {'Content-Type': 'application/json'},
+        body: {'username': username, 'password': password},
+        response: expectedResponse,
+      );
 
       final result = await apiConsumer.login(username, password);
 
@@ -43,12 +49,31 @@ void main() {
     });
 
     test('Handles token refresh scenario', () async {
-      mockHttpResponse(mockClient, loginEndpoint, expectedResponse, 200);
+      // Initial login mock
+      mockHttpResponse(
+        mockClient: mockClient,
+        method: 'POST',
+        url: Uri.parse('${apiConsumer.baseUrl}$loginEndpoint'),
+        headers: {'Content-Type': 'application/json'},
+        body: {'username': username, 'password': password},
+        response: {'token': 'mock_token', 'user_id': 1},
+      );
+
       await apiConsumer.login(username, password);
 
+      // Refresh token mock
       final newTokenResponse = {'token': refreshedTokenPrefix, 'user_id': 26};
-      mockHttpResponse(mockClient, loginEndpoint, newTokenResponse, 200);
-      await apiConsumer.login(username, password);
+      mockHttpResponse(
+        mockClient: mockClient,
+        method: 'POST',
+        url: Uri.parse('${apiConsumer.baseUrl}$loginEndpoint'),
+        headers: {'Content-Type': 'application/json'},
+        body: {'username': username, 'password': password},
+        response: newTokenResponse,
+      );
+
+      final refreshedResult = await apiConsumer.login(username, password);
+      expect(refreshedResult['token'], startsWith(refreshedTokenPrefix));
 
       final storedData = await getStoredLoginData();
       expect(storedData?['token'], startsWith(refreshedTokenPrefix));
@@ -56,7 +81,15 @@ void main() {
 
     test('Throws exception when login fails with 401', () async {
       final errorResponse = {'error': 'Invalid password'};
-      mockHttpResponse(mockClient, loginEndpoint, errorResponse, 401);
+      mockHttpResponse(
+        mockClient: mockClient,
+        method: 'POST',
+        url: Uri.parse('${apiConsumer.baseUrl}$loginEndpoint'),
+        headers: {'Content-Type': 'application/json'},
+        body: {'username': username, 'password': 'wrong_password'},
+        response: errorResponse,
+        statusCode: 401,
+      );
 
       expect(() => apiConsumer.login(username, 'wrong_password'), throwsException);
 
