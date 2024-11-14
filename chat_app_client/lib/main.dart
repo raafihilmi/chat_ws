@@ -8,11 +8,16 @@ import 'package:chat_app_client/features/chat/presentation/bloc/user/user_bloc.d
 import 'package:chat_app_client/features/chat/presentation/pages/blocked_users_page.dart';
 import 'package:chat_app_client/features/chat/presentation/pages/chat_page.dart';
 import 'package:chat_app_client/features/chat/presentation/pages/user_list_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'core/firebase_messaging_service.dart';
 import 'injection_container.dart' as di;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await FirebaseMessagingService.initialize();
   await di.init();
   runApp(MyApp());
 }

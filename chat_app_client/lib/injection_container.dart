@@ -23,12 +23,14 @@ import 'features/chat/domain/repositories/user_repository.dart';
 import 'features/chat/domain/usecases/connect_to_chat.dart';
 import 'features/chat/domain/usecases/get_available_users.dart';
 import 'features/chat/domain/usecases/send_message.dart';
+import 'package:http/http.dart' as http;
 import 'features/chat/presentation/bloc/user/user_bloc.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
   // core
+  sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(
     () => ApiConsumer(client: sl()),
   );

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/io.dart';
@@ -8,11 +10,12 @@ import 'package:web_socket_channel/io.dart';
 import '../../features/chat/data/models/user_models.dart';
 
 class ApiConsumer {
-  final String baseUrl = 'http://192.168.20.76:8080/api';
-  final String wsUrl = 'ws://192.168.20.76:8080/ws';
+  final String baseUrl = 'http://192.168.1.217:8080/api';
+  final String wsUrl = 'ws://192.168.1.217:8080/ws';
   final http.Client client;
 
   ApiConsumer({required this.client});
+
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -23,6 +26,7 @@ class ApiConsumer {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_token', token);
   }
+
   Future<int?> _getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('auth_uid');
@@ -33,25 +37,53 @@ class ApiConsumer {
     await prefs.setInt('auth_uid', uid);
   }
 
+  Future<void> _saveFCMTokenToServer(int userId, String fcmToken,
+      String token) async {
+    final response = await client.post(
+      Uri.parse('$baseUrl/auth/save_token'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'user_id': userId, 'fcm_token': fcmToken}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to save FCM token');
+    }
+  }
+
 
   Future<Map<String, dynamic>> login(String username, password) async {
     log('$baseUrl/auth/login', name: "LOGIN API: ");
+    await Firebase.initializeApp();
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+
     final response = await client.post(Uri.parse('$baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'username': username, 'password': password}));
+        body: json.encode({
+          'username': username,
+          'password': password,
+          'fcm_token': fcmToken
+        }));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       await _saveToken(data['token']);
       await _saveUserId(data['user_id']);
+      if (fcmToken != null) {
+        log('FCM Token: $fcmToken', name: "FCM TOKEN");
+        await _saveFCMTokenToServer(data['user_id'], fcmToken, data['token']);
+      }
+
       return data;
     } else {
       throw Exception('Failed to login');
     }
   }
 
-  Future<Map<String, dynamic>> register(
-      String username, password, email) async {
+  Future<Map<String, dynamic>> register(String username, password,
+      email) async {
     final response = await http.post(Uri.parse('$baseUrl/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(
@@ -74,7 +106,8 @@ class ApiConsumer {
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = json.decode(response.body);
-      return jsonList.isEmpty ? [] : jsonList.map((json) => UserModel.fromJson(json)).toList();
+      return jsonList.isEmpty ? [] : jsonList.map((json) =>
+          UserModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load users list');
     }
@@ -112,8 +145,8 @@ class ApiConsumer {
     }
   }
 
-  Future<Map<String, dynamic>> sendMessage(
-      int receiverId, String message) async {
+  Future<Map<String, dynamic>> sendMessage(int receiverId,
+      String message) async {
     final token = await _getToken();
     final response = await http.post(Uri.parse('$baseUrl/chats'),
         headers: {'Authorization': 'Bearer $token'},
@@ -140,12 +173,12 @@ class ApiConsumer {
     }
   }
 
-  Future<void> reportUser(String reason,int reportedUserId) async {
+  Future<void> reportUser(String reason, int reportedUserId) async {
     final token = await _getToken();
     final response = await http.post(
         Uri.parse('$baseUrl/report/user/$reportedUserId'),
         headers: {'Authorization': 'Bearer $token'},
-    body: json.encode({'reason': reason}));
+        body: json.encode({'reason': reason}));
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
