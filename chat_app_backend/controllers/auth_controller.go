@@ -79,3 +79,30 @@ func Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"token": tokenString, "user_id": user.ID})
 }
+
+func SaveFCMToken(c *gin.Context) {
+	var tokenData struct {
+		UserID   uint   `json:"user_id"`
+		FCMToken string `json:"fcm_token"`
+	}
+
+	if err := c.ShouldBindJSON(&tokenData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user models.User
+	if err := config.DB.First(&user, tokenData.UserID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	// Update FCM Token di database
+	user.FCMToken = tokenData.FCMToken
+	if err := config.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update FCM Token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "FCM Token saved successfully"})
+}

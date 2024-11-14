@@ -12,6 +12,7 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		auth.POST("/register", controllers.Register)
 		auth.POST("/login", controllers.Login)
+		auth.POST("/save_token", controllers.SaveFCMToken)
 	}
 
 	api := r.Group("/api").Use(middlewares.AuthMiddleware())

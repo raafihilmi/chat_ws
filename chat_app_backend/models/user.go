@@ -12,6 +12,7 @@ type User struct {
 	Username string `gorm:"unique;not null" json:"username"`
 	Email    string `gorm:"unique;not null" json:"email"`
 	Password string `gorm:"not null" json:"password"`
+	FCMToken string `json:"fcm_token"`
 }
 
 func (u *User) HashPassword(plain string) error {
