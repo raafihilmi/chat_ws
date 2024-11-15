@@ -10,8 +10,8 @@ import 'package:web_socket_channel/io.dart';
 import '../../features/chat/data/models/user_models.dart';
 
 class ApiConsumer {
-  final String baseUrl = 'http://192.168.1.217:8080/api';
-  final String wsUrl = 'ws://192.168.1.217:8080/ws';
+  final String baseUrl = 'http://192.168.20.43:8080/api';
+  final String wsUrl = 'ws://192.168.20.43:8080/ws';
   final http.Client client;
 
   ApiConsumer({required this.client});
