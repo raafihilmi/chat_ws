@@ -12,6 +12,7 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		auth.POST("/register", controllers.Register)
 		auth.POST("/login", controllers.Login)
+		auth.POST("/save_token", controllers.SaveFCMToken)
 	}
 
 	api := r.Group("/api").Use(middlewares.AuthMiddleware())
@@ -22,6 +23,8 @@ func SetupRoutes(r *gin.Engine) {
 		api.POST("/block/:user_id", controllers.BlockUser)
 		api.DELETE("/block/:user_id", controllers.UnblockUser)
 		api.GET("/block", controllers.GetBlockedUsers)
+
+		api.GET("/users/available", controllers.GetAllUsersExceptBlockedUsers)
 
 		api.POST("/report/user/:user_id", controllers.ReportUser)
 		api.POST("/report/message/:message_id", controllers.ReportMessage)

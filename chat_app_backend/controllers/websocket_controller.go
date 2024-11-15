@@ -7,6 +7,7 @@ import (
 
 	"chat_app_backend/config"
 	"chat_app_backend/models"
+	"chat_app_backend/utils"
 
 	"chat_app_backend/websockets"
 
@@ -74,6 +75,17 @@ func readPump(client *websockets.Client) {
 		config.DB.Create(&chatMessage)
 
 		manager.Send(chatMessage.ReceiverID, message)
+
+		// Fetch receiver user from DB
+		var receiver models.User
+		if err := config.DB.Where("id = ?", chatMessage.ReceiverID).First(&receiver).Error; err == nil && receiver.FCMToken != "" {
+			// Send Push Notification
+			err := utils.SendPushNotification(receiver.FCMToken, receiver.Username, chatMessage.Message)
+			if err != nil {
+				log.Printf("Failed to send push notification: %v", err)
+			}
+		}
+
 	}
 }
 

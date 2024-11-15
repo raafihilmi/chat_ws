@@ -1,0 +1,30 @@
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Folders
+/node_modules
+/hanya
+/vendor
+/build
+/dist
+/tmp
+/temp
+/logs
+
+/.idea
+/.vscode
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+/bin
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+/go.work

@@ -65,3 +65,19 @@ func GetBlockedUsers(c *gin.Context) {
 
 	c.JSON(http.StatusOK, blockedUsers)
 }
+
+func GetAllUsersExceptBlockedUsers(c *gin.Context) {
+	userID := c.GetUint("user_id")
+	var users []models.User
+
+	// Query untuk mengambil semua user kecuali yang diblokir oleh userID
+	if err := config.DB.
+		Joins("LEFT JOIN blocks ON users.id = blocks.blocked_id AND blocks.blocker_id = ?", userID).
+		Where("blocks.blocked_id IS NULL").
+		Find(&users).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get users"})
+		return
+	}
+
+	c.JSON(http.StatusOK, users)
+}
