@@ -36,7 +36,7 @@ func InitFirebase() error {
 	return nil
 }
 
-func SendPushNotification(fcmToken, title, body string) error {
+func SendPushNotification(fcmToken, title, body, userId, selectedUser, username string) error {
 	if FirebaseMessagingClient == nil {
 		return fmt.Errorf("firebase Messaging client is not initialized")
 	}
@@ -46,6 +46,11 @@ func SendPushNotification(fcmToken, title, body string) error {
 		Notification: &messaging.Notification{
 			Title: title,
 			Body:  body,
+		},
+		Data: map[string]string{
+			"userId":       userId,
+			"selectedUser": selectedUser,
+			"username":     username,
 		},
 	}
 

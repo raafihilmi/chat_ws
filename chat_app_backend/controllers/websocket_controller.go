@@ -8,8 +8,8 @@ import (
 	"chat_app_backend/config"
 	"chat_app_backend/models"
 	"chat_app_backend/utils"
-
 	"chat_app_backend/websockets"
+	"fmt"
 
 	"github.com/gorilla/websocket"
 
@@ -80,7 +80,7 @@ func readPump(client *websockets.Client) {
 		var receiver models.User
 		if err := config.DB.Where("id = ?", chatMessage.ReceiverID).First(&receiver).Error; err == nil && receiver.FCMToken != "" {
 			// Send Push Notification
-			err := utils.SendPushNotification(receiver.FCMToken, receiver.Username, chatMessage.Message)
+			err := utils.SendPushNotification(receiver.FCMToken, "Pesan baru dari "+receiver.Username, chatMessage.Message, fmt.Sprintf("%d", chatMessage.SenderID), fmt.Sprintf("%d", chatMessage.ReceiverID), receiver.Username)
 			if err != nil {
 				log.Printf("Failed to send push notification: %v", err)
 			}
