@@ -13,4 +13,13 @@ class Message extends Equatable {
 
   @override
   List<Object?> get props => [senderId, receiverId, message, isRead];
+
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
+      senderId: json['senderId'],
+      receiverId: json['receiverId'],
+      message: json['message'],
+      isRead: json['isRead']
+    );
+  }
 }

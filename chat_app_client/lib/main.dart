@@ -12,12 +12,14 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
   import 'package:flutter/material.dart';
   import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
   import 'core/firebase_messaging_service.dart';
   import 'injection_container.dart' as di;
 
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   void main() async {
+    await dotenv.load();
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
 

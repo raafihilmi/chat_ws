@@ -16,11 +16,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Map<String, dynamic>> login(String username, password) async {
     final response = await apiConsumer.login(username, password);
-    log(response['token'], name: "TokenDS");
-    log(response['user_id'].toString(), name: "UserIDDS");
     return {
-      'token': response['token'],
-      'user_id': response['user_id'],
+      'token': response['data']['access_token'],
+      'user_id': response['data']['user_id'],
     };
   }
 
