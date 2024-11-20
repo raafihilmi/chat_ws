@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:chat_app_client/core/socket_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -13,6 +14,7 @@ import '../../features/chat/data/models/user_models.dart';
 class ApiConsumer {
   final String baseUrl = dotenv.env['API_BASE_URL'] ?? '';
   final String wsUrl = dotenv.env['WS_BASE_URL'] ?? '';
+  final SocketService socket = SocketService();
   final http.Client client;
 
   ApiConsumer({required this.client});
@@ -71,6 +73,8 @@ class ApiConsumer {
 
         if (accessToken != null && userId != null) {
           await _saveToken(accessToken);
+          socket.initSocket(accessToken);
+
           await _saveUserId(userId);
           return data;
         }

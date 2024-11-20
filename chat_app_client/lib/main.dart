@@ -1,9 +1,12 @@
-  import 'package:chat_app_client/features/authentication/presentation/bloc/auth_bloc.dart';
+  import 'dart:io';
+
+import 'package:chat_app_client/features/authentication/presentation/bloc/auth_bloc.dart';
   import 'package:chat_app_client/features/authentication/presentation/pages/auth_gate.dart';
   import 'package:chat_app_client/features/authentication/presentation/pages/login_page.dart';
   import 'package:chat_app_client/features/authentication/presentation/pages/register_page.dart';
   import 'package:chat_app_client/features/chat/presentation/bloc/blockeduser/blockeduser_bloc.dart';
   import 'package:chat_app_client/features/chat/presentation/bloc/chat/chat_bloc.dart';
+import 'package:chat_app_client/features/chat/presentation/bloc/student/student_bloc.dart';
   import 'package:chat_app_client/features/chat/presentation/bloc/user/user_bloc.dart';
   import 'package:chat_app_client/features/chat/presentation/pages/blocked_users_page.dart';
   import 'package:chat_app_client/features/chat/presentation/pages/chat_page.dart';
@@ -73,6 +76,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
             ),
             BlocProvider<BlockeduserBloc>(
               create: (context) => di.sl<BlockeduserBloc>(),
+            ),
+            BlocProvider<StudentBloc>(
+              create: (context) => di.sl<StudentBloc>()..add(GetStudentsEvent('sandi')),
             ),
             BlocProvider<UserBloc>(create: (context) => di.sl<UserBloc>(),)
           ],

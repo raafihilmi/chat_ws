@@ -17,13 +17,42 @@ class ConnectToChatEvent extends ChatEvent {
   List<Object> get props => [currentUserId, otherUserId];
 }
 
-class SendMessageEvent extends ChatEvent {
-  final Message message;
+class InitializeChatEvent extends ChatEvent {
+  final String receiverId;
 
-  const SendMessageEvent(this.message);
+  const InitializeChatEvent(this.receiverId);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [receiverId];
+}
+
+class MarkMessageAsSeenEvent extends ChatEvent {
+  final String messageId;
+
+  const MarkMessageAsSeenEvent(this.messageId);
+
+  @override
+  List<Object> get props => [messageId];
+}
+
+class SendMessageEvent extends ChatEvent {
+  final String message;
+  final String receiverId;
+
+  const SendMessageEvent(this.message, this.receiverId);
+
+  @override
+  List<Object> get props => [message,receiverId];
+}
+
+class SetTypingStatusEvent extends ChatEvent {
+  final bool isTyping;
+  final String receiverId;
+
+  const SetTypingStatusEvent(this.receiverId, this.isTyping);
+
+  @override
+  List<Object> get props => [receiverId, isTyping];
 }
 
 class LoadChatHistory extends ChatEvent {

@@ -1,55 +1,76 @@
-import 'dart:developer';
+import 'dart:async';
 
+import 'package:chat_app_client/features/chat/domain/entities/chat_message.dart';
+import 'package:chat_app_client/features/chat/domain/repositories/chat_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chat_app_client/features/chat/domain/entities/message.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../data/datasources/chat_remote_data_source.dart';
-import '../../../domain/usecases/connect_to_chat.dart';
-import '../../../domain/usecases/send_message.dart';
 
 part 'chat_event.dart';
 
 part 'chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
-  final ConnectToChat connectToChat;
-  final SendMessage sendMessage;
-  final List<Message> messages = [];
+  final ChatRepository _repository;
 
+  ChatBloc(this._repository) : super(ChatInitial()) {
+    on<InitializeChatEvent>(_onInitializeChat);
+    on<SendMessageEvent>(_onSendMessage);
+    on<MarkMessageAsSeenEvent>(_onMarkMessageAsSeen);
+    on<SetTypingStatusEvent>(_onSetTypingStatus);
+  }
 
-  ChatBloc(this.connectToChat, this.sendMessage) : super(ChatInitial()) {
-    on<ConnectToChatEvent>((event, emit) async {
-      emit(ChatLoading());
-      try {
-        await emit.forEach<Message>(
-          connectToChat.execute(event.currentUserId, event.otherUserId),
-          onData: (message) {
-            log('Message received: ${message.message}');
-            messages.add(message);
-            return MessageReceived(message);
-          },
-        );
-      } catch (e) {
-        log('Error connecting to chat: $e');
-        emit(ChatError('Failed to connect to chat'));
-      }
+  StreamSubscription? _chatSubscription;
+
+  Future<void> _onInitializeChat(
+      InitializeChatEvent event,
+      Emitter<ChatState> emit,
+      ) async {
+    await _chatSubscription?.cancel();
+    _chatSubscription = _repository
+        .getChatMessages(event.receiverId)
+        .listen((messages) {
+      emit(ChatMessageLoaded(messages));
     });
+  }
 
-    on<SendMessageEvent>((event, emit) async {
-      log('Sending message in bloc: ${event.message.message}');
-      final result = await sendMessage.execute(event.message);
-      result.fold(
-        (failure) {
-          log('Failed to send message: $failure');
-          emit(ChatError('Failed to send message'));
-        },
-        (_) {
-          log('Message sent successfully ${event.message}');
-          messages.add(event.message);
-          emit(MessageReceived(event.message));
-        },
-      );
-    });
+  Future<void> _onSendMessage(
+      SendMessageEvent event,
+      Emitter<ChatState> emit,
+      ) async {
+    try {
+      await _repository.sendMessage(event.receiverId, event.message);
+    } catch (e) {
+      emit(ChatError(e.toString()));
+    }
+  }
+
+  Future<void> _onMarkMessageAsSeen(
+      MarkMessageAsSeenEvent event,
+      Emitter<ChatState> emit,
+      ) async {
+    try {
+      await _repository.markMessageAsSeen(event.messageId);
+    } catch (e) {
+      emit(ChatError(e.toString()));
+    }
+  }
+
+  Future<void> _onSetTypingStatus(
+      SetTypingStatusEvent event,
+      Emitter<ChatState> emit,
+      ) async {
+    try {
+      await _repository.setTypingStatus(event.receiverId, event.isTyping);
+    } catch (e) {
+      emit(ChatError(e.toString()));
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _chatSubscription?.cancel();
+    return super.close();
   }
 }
