@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chat_app_client/features/chat/domain/entities/message.dart';
 import 'package:equatable/equatable.dart';
 
-
 part 'chat_event.dart';
 
 part 'chat_state.dart';
@@ -24,22 +23,27 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   StreamSubscription? _chatSubscription;
 
   Future<void> _onInitializeChat(
-      InitializeChatEvent event,
-      Emitter<ChatState> emit,
-      ) async {
+    InitializeChatEvent event,
+    Emitter<ChatState> emit,
+  ) async {
     await _chatSubscription?.cancel();
-    _chatSubscription = _repository
-        .getChatMessages(event.receiverId)
-        .listen((messages) {
-      emit(ChatMessageLoaded(messages));
-    });
+
+    emit(ChatLoading());
+
+    await emit.forEach<List<ChatMessage>>(
+      _repository.getChatMessages(event.receiverId),
+      onData: (messages) => ChatMessageLoaded(messages),
+      onError: (error, stackTrace) => ChatError(error.toString()),
+    );
   }
 
   Future<void> _onSendMessage(
-      SendMessageEvent event,
-      Emitter<ChatState> emit,
-      ) async {
+    SendMessageEvent event,
+    Emitter<ChatState> emit,
+  ) async {
     try {
+      print("${event.message} yak");
+      print("${event.receiverId} yap");
       await _repository.sendMessage(event.receiverId, event.message);
     } catch (e) {
       emit(ChatError(e.toString()));
@@ -47,9 +51,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   Future<void> _onMarkMessageAsSeen(
-      MarkMessageAsSeenEvent event,
-      Emitter<ChatState> emit,
-      ) async {
+    MarkMessageAsSeenEvent event,
+    Emitter<ChatState> emit,
+  ) async {
     try {
       await _repository.markMessageAsSeen(event.messageId);
     } catch (e) {
@@ -58,9 +62,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   Future<void> _onSetTypingStatus(
-      SetTypingStatusEvent event,
-      Emitter<ChatState> emit,
-      ) async {
+    SetTypingStatusEvent event,
+    Emitter<ChatState> emit,
+  ) async {
     try {
       await _repository.setTypingStatus(event.receiverId, event.isTyping);
     } catch (e) {

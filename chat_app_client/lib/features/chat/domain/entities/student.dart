@@ -12,6 +12,18 @@ class Student {
     required this.joinSince,
     required this.subjects,
   });
+
+  factory Student.fromJson(Map<String, dynamic> json) {
+    return Student(
+      id: json['id'],
+      fullName: json['full_name'],
+      avatar: json['avatar'] ?? '',
+      joinSince: json['join_since'],
+      subjects: (json['subjects'] as List)
+          .map((e) => Subject.fromJson(e))
+          .toList(),
+    );
+  }
 }
 
 class Subject {
@@ -24,4 +36,12 @@ class Subject {
     required this.name,
     required this.isClassmate,
   });
+
+  factory Subject.fromJson(Map<String, dynamic> json) {
+    return Subject(
+      id: json['id'],
+      name: json['name'],
+      isClassmate: json['is_classmate'],
+    );
+  }
 }

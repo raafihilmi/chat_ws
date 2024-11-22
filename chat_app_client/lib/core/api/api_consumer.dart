@@ -19,7 +19,7 @@ class ApiConsumer {
 
   ApiConsumer({required this.client});
 
-  Future<String?> _getToken() async {
+  Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
@@ -99,7 +99,7 @@ class ApiConsumer {
   }
 
   Future<List<UserModel>> getAvailableUsers() async {
-    final token = await _getToken();
+    final token = await getToken();
     log(token ?? 'Gak ada token', name: "getAvailableUsers");
     final response = await client.get(
       Uri.parse('$baseUrl/users/available'),
@@ -117,7 +117,7 @@ class ApiConsumer {
   }
 
   Future<List<UserModel>> getBlockedUsers() async {
-    final token = await _getToken();
+    final token = await getToken();
     log(token ?? 'Gak ada token', name: "getBlockedUsers");
     final response = await http.get(
       Uri.parse('$baseUrl/block'),
@@ -133,7 +133,7 @@ class ApiConsumer {
   }
 
   Future<List<Map<String, dynamic>>> getChatHistory(int userId) async {
-    final token = await _getToken();
+    final token = await getToken();
     log(token!, name: "ChatAPI");
     final response = await http.get(Uri.parse('$baseUrl/chats/$userId'),
         headers: {'Authorization': 'Bearer $token'});
@@ -150,7 +150,7 @@ class ApiConsumer {
 
   Future<Map<String, dynamic>> sendMessage(
       int receiverId, String message) async {
-    final token = await _getToken();
+    final token = await getToken();
     final response = await http.post(Uri.parse('$baseUrl/chats'),
         headers: {'Authorization': 'Bearer $token'},
         body: json.encode({
@@ -166,7 +166,7 @@ class ApiConsumer {
   }
 
   Future<void> blockUser(int blockedUserId) async {
-    final token = await _getToken();
+    final token = await getToken();
     final response = await http.post(Uri.parse('$baseUrl/block/$blockedUserId'),
         headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode == 200) {
@@ -177,7 +177,7 @@ class ApiConsumer {
   }
 
   Future<void> reportUser(String reason, int reportedUserId) async {
-    final token = await _getToken();
+    final token = await getToken();
     final response = await http.post(
         Uri.parse('$baseUrl/report/user/$reportedUserId'),
         headers: {'Authorization': 'Bearer $token'},
@@ -190,7 +190,7 @@ class ApiConsumer {
   }
 
   Future<IOWebSocketChannel> connectWebSocket() async {
-    final token = await _getToken();
+    final token = await getToken();
 
     return IOWebSocketChannel.connect(
       Uri.parse(wsUrl),

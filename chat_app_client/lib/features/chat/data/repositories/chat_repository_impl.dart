@@ -9,16 +9,32 @@ class ChatRepositoryImpl implements ChatRepository {
   final _messagesController = StreamController<List<ChatMessage>>.broadcast();
   List<ChatMessage> _messages = [];
 
-
   ChatRepositoryImpl(this._socketService) {
     _setupMessageListener();
   }
 
   void _setupMessageListener() {
+    _socketService.offEvent('v1_chat_send_message_response');
+    _socketService.offEvent('v1_chat_receive_message_response');
+
     _socketService.onEvent('v1_chat_send_message_response', (data) {
       final message = _convertToMessage(data['data']);
-      _messages.add(message);
-      _messagesController.add(List.from(_messages));
+      if (!_messages.any((msg) => msg.messageId == message.messageId)) {
+        _messages.add(message);
+        _messagesController.add(List.from(_messages));
+      }
+    });
+
+    _socketService.onEvent('v1_chat_receive_message_response', (data) {
+      if (data['code'] == 200) {
+        final message = _convertToMessage(data['data']);
+        if (!_messages.any((msg) => msg.messageId == message.messageId)) {
+          _messages.add(message);
+          _messagesController.add(List.from(_messages));
+        }
+      } else {
+        print("Error menerima pesan: ${data['message']}");
+      }
     });
   }
 
@@ -35,11 +51,36 @@ class ChatRepositoryImpl implements ChatRepository {
     );
   }
 
-  // Stream<List<ChatMessage>> get messages => _messagesController.stream;
+  Stream<List<ChatMessage>> get messages => _messagesController.stream;
 
   @override
   Stream<List<ChatMessage>> getChatMessages(String receiverId) {
-    _socketService.socket?.emit('v1_get_chat_histories');
+    _socketService.offEvent('v1_get_chat_histories_response');
+    _socketService.socket
+        ?.emit('v1_get_chat_histories', {'receiver_id': receiverId});
+
+    _socketService.onEvent('v1_get_chat_histories_response', (data) {
+      print("Response diterima di WebSocket: $data");
+      if (data['code'] == 200) {
+        final messagesData = data['data']['messages'] as List;
+        final chatMessages =
+            messagesData.map((msg) => ChatMessage.fromJson(msg)).toList();
+        print("Messages parsed: $chatMessages");
+        chatMessages
+            .sort((a, b) => a.messageTimestamp.compareTo(b.messageTimestamp));
+
+        _messages = chatMessages;
+        _messagesController.add(List.from(_messages));
+      } else {
+        print("Error dari response: ${data['message']}");
+        _messagesController.addError('Failed to load chat histories');
+      }
+    });
+
+    _socketService.onEvent('v1_get_chat_histories_error', (error) {
+      _messagesController.addError(error.toString());
+    });
+
     return _messagesController.stream;
   }
 
@@ -49,12 +90,24 @@ class ChatRepositoryImpl implements ChatRepository {
       'receiver_id': receiverId,
       'message': message,
     });
+
+    _socketService.onEvent('v1_chat_send_message_error', (error) {
+      _messagesController.addError(error);
+    });
   }
 
   @override
   Future<void> markMessageAsSeen(String messageId) async {
     _socketService.socket?.emit('v1_mark_message_as_seen', {
-      'message_id': messageId,
+      'receiver_id': messageId,
+    });
+
+    _socketService.onEvent('v1_mark_message_as_seen_response', (data) {
+      if (data['code'] == 200) {
+        print(data['message']);
+      } else {
+        print("Gagal memperbarui status pesan: ${data['message']}");
+      }
     });
   }
 
@@ -64,5 +117,12 @@ class ChatRepositoryImpl implements ChatRepository {
       'receiver_id': receiverId,
       'is_typing': isTyping,
     });
+  }
+
+  void dispose() {
+    _socketService.offEvent('v1_chat_send_message_response');
+    _socketService.offEvent('v1_get_chat_histories_response');
+    _socketService.offEvent('v1_chat_receive_message_response');
+    _messagesController.close();
   }
 }

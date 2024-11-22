@@ -64,7 +64,7 @@ Future<void> init() async {
   sl.registerLazySingleton(()=> UnblockUser(sl()));
   sl.registerLazySingleton(()=> ReportUser(sl()));
   sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
-  sl.registerLazySingleton<StudentRepository>(() => StudentRepositoryImpl(sl()));
+  sl.registerLazySingleton<StudentRepository>(() => StudentRepositoryImpl(sl(), sl()));
   sl.registerLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSourceImpl(sl()));
   sl.registerFactory(() => UserBloc(getAvailableUsers: sl(),blockUser: sl(), reportUser: sl()));
   sl.registerFactory(() => BlockeduserBloc(unblockUser: sl(), getBlockedUsers: sl()));

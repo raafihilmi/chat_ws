@@ -78,7 +78,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
               create: (context) => di.sl<BlockeduserBloc>(),
             ),
             BlocProvider<StudentBloc>(
-              create: (context) => di.sl<StudentBloc>()..add(GetStudentsEvent('sandi')),
+              create: (context) => di.sl<StudentBloc>()..add(GetStudentsEvent('duren')),
             ),
             BlocProvider<UserBloc>(create: (context) => di.sl<UserBloc>(),)
           ],

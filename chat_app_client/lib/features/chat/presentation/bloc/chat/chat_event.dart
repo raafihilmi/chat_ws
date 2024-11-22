@@ -39,10 +39,10 @@ class SendMessageEvent extends ChatEvent {
   final String message;
   final String receiverId;
 
-  const SendMessageEvent(this.message, this.receiverId);
+  const SendMessageEvent(this.receiverId, this.message);
 
   @override
-  List<Object> get props => [message,receiverId];
+  List<Object> get props => [receiverId,message];
 }
 
 class SetTypingStatusEvent extends ChatEvent {
