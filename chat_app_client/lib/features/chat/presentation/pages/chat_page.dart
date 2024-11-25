@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app_client/core/components/message_bubble.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/chat/chat_bloc.dart';
+import 'package:chat_app_client/features/chat/presentation/widgets/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,10 +19,16 @@ class ChatPageState extends State<ChatPage> {
   String? _receiverId;
   String? _receiverAvatar;
   String? _receiverFullName;
+  String? _receiverJoinSince;
+  String? _receiverStatus;
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 
@@ -34,6 +40,8 @@ class ChatPageState extends State<ChatPage> {
     _receiverId = args['receiverId'];
     _receiverAvatar = args['avatar'];
     _receiverFullName = args['fullName'];
+    _receiverJoinSince = args['joinSince'];
+    _receiverStatus = args['status'];
 
     context.read<ChatBloc>().add(InitializeChatEvent(_receiverId!));
   }
@@ -54,6 +62,7 @@ class ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.white,
         leadingWidth: 75,
@@ -65,64 +74,70 @@ class ChatPageState extends State<ChatPage> {
             child: Row(
               children: [
                 const Icon(Icons.arrow_back),
-                CircleAvatar(
-                  child: _receiverAvatar!.isNotEmpty
-                      ? ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl: _receiverAvatar!,
-                            placeholder: (context, url) => const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.person),
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : const Icon(Icons.person),
-                ),
+                Avatar(avatarUrl: _receiverAvatar!, status: _receiverStatus!)
               ],
             ),
           ),
         ),
-        title: Row(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(_receiverFullName!),
+            Row(
+              children: [
+                Text(
+                  _receiverStatus!,
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: _receiverStatus == 'ONLINE'
+                          ? Colors.green
+                          : Colors.grey),
+                ),
+                Text(
+                  " - Bergabung Sejak $_receiverJoinSince",
+                  style: const TextStyle(fontSize: 10),
+                ),
+              ],
+            ),
           ],
         ),
       ),
       body: Column(
         children: [
-          Expanded(
-            child: BlocBuilder<ChatBloc, ChatState>(
-              builder: (context, state) {
-                if (state is ChatLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state is ChatMessageLoaded) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    _scrollToBottom();
-                  });
-                  return ListView.builder(
-                    controller: _scrollController,
-                    itemCount: state.message.length,
-                    itemBuilder: (context, index) {
-                      final message = state.message[index];
-                      return MessageBubble(message: message);
-                    },
-                  );
-                }
-                if (state is ChatError) {
-                  return Center(
-                    child: Text('Error: ${state.message}'),
-                  );
-                }
-                return const Center(child: Text("Error bos"));
-              },
-            ),
+          BlocBuilder<ChatBloc, ChatState>(
+            builder: (context, state) {
+              if (state is ChatLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is ChatMessageLoaded) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scrollToBottom();
+                });
+                return Expanded(
+                  child: AnimatedPadding(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: state.message.length,
+                      itemBuilder: (context, index) {
+                        final message = state.message[index];
+                        return MessageBubble(message: message);
+                      },
+                    ),
+                  ),
+                );
+              }
+              if (state is ChatError) {
+                return Center(
+                  child: Text('Error: ${state.message}'),
+                );
+              }
+              return const Center(child: Text("Error bos"));
+            },
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -131,7 +146,10 @@ class ChatPageState extends State<ChatPage> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    onChanged: (_) => _handleTyping(),
+                    onChanged: (_) {
+                      _handleTyping();
+                      _scrollToBottom();
+                    },
                     decoration: InputDecoration(
                         fillColor: const Color(0xFFC2D6FF),
                         filled: true,

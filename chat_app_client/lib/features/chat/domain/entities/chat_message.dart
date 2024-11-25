@@ -2,6 +2,7 @@ class ChatMessage {
   final String id;
   final String fullName;
   final String avatar;
+  final String status;
   final String messageId;
   final String message;
   final DateTime messageTimestamp;
@@ -12,6 +13,7 @@ class ChatMessage {
     required this.id,
     required this.fullName,
     required this.avatar,
+    required this.status,
     required this.messageId,
     required this.message,
     required this.messageTimestamp,
@@ -24,6 +26,7 @@ class ChatMessage {
       id: json['id'] ?? '',
       fullName: json['full_name'] ?? '',
       avatar: json['avatar'] ?? '',
+      status: json['status'] ?? '',
       messageId: json['message_id'] ?? '',
       message: json['message'] ?? '',
       messageTimestamp: json['message_timestamp'] != null

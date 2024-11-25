@@ -43,6 +43,7 @@ class ChatRepositoryImpl implements ChatRepository {
       id: data['id'],
       fullName: data['full_name'],
       avatar: data['avatar'],
+      status: data['status'],
       messageId: data['message_id'],
       message: data['message'],
       messageTimestamp: DateTime.parse(data['message_timestamp']),

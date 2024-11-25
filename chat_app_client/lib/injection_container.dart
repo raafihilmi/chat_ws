@@ -18,6 +18,7 @@ import 'package:chat_app_client/features/chat/domain/usecases/report_user.dart';
 import 'package:chat_app_client/features/chat/domain/usecases/unblock_user.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/blockeduser/blockeduser_bloc.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/chat/chat_bloc.dart';
+import 'package:chat_app_client/features/chat/presentation/bloc/conversation/conversation_bloc.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/student/student_bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -69,4 +70,5 @@ Future<void> init() async {
   sl.registerFactory(() => UserBloc(getAvailableUsers: sl(),blockUser: sl(), reportUser: sl()));
   sl.registerFactory(() => BlockeduserBloc(unblockUser: sl(), getBlockedUsers: sl()));
   sl.registerFactory(()=> StudentBloc(sl()));
+  sl.registerFactory(()=> ConversationBloc(sl()));
 }

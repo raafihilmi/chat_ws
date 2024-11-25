@@ -39,13 +39,13 @@ class MyDrawer extends StatelessWidget {
                         Navigator.pushReplacementNamed(context, '/users');
                       },
                     ),
-                    ListTile(
-                      title: const Text("Blocked Users"),
-                      leading: const Icon(Icons.person),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/blocked');
-                      },
-                    ),
+                    // ListTile(
+                    //   title: const Text("Blocked Users"),
+                    //   leading: const Icon(Icons.person),
+                    //   onTap: () {
+                    //     Navigator.pushNamed(context, '/blocked');
+                    //   },
+                    // ),
                   ],
                 ),
               )

@@ -15,7 +15,6 @@ class GetStudentsEvent extends StudentEvent {
   @override
   List<Object> get props => [search];
 }
-
 class SearchStudentsEvent extends StudentEvent {
   final String search;
 

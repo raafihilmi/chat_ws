@@ -1,7 +1,7 @@
 class Conversation {
   final String id;
   final String fullName;
-  final String? avatar;
+  final String avatar;
   final String status;
   final String joinSince;
   final String lastMessage;
@@ -13,7 +13,7 @@ class Conversation {
   Conversation({
     required this.id,
     required this.fullName,
-    this.avatar,
+    required this.avatar,
     required this.status,
     required this.joinSince,
     required this.lastMessage,
@@ -27,7 +27,7 @@ class Conversation {
     return Conversation(
       id: json['id'],
       fullName: json['full_name'],
-      avatar: json['avatar'],
+      avatar: json['avatar']  ?? '',
       status: json['status'],
       joinSince: json['join_since'],
       lastMessage: json['last_message'],

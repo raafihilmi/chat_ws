@@ -51,6 +51,17 @@ class SocketService {
       print('Chat histories response: $data');
     });
 
+    socket?.on('v1_get_conversations', (data) {
+      print('Chat conversations received: $data');
+    });
+
+    socket?.on('v1_get_conversations_error', (data) {
+      print('Chat conversations error: $data');
+    });
+    socket?.on('v1_get_conversations_response', (data) {
+      print('Chat conversations response: $data');
+    });
+
     socket?.on('v1_chat_send_message', (data) {
       print('Chat send message: $data');
     });
