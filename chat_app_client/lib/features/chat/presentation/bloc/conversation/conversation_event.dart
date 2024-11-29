@@ -16,3 +16,12 @@ class GetConversationEvent extends ConversationEvent {
   @override
   List<Object> get props => [search];
 }
+
+class UpdateConversationEvent extends ConversationEvent {
+  final List<Conversation> conversations;
+
+  UpdateConversationEvent(this.conversations);
+
+  @override
+  List<Object?> get props => [conversations];
+}

@@ -9,8 +9,30 @@ import 'package:chat_app_client/features/chat/domain/repositories/student_reposi
 class StudentRepositoryImpl implements StudentRepository {
   final SocketService _socketService;
   final ApiConsumer apiConsumer;
+  final _conversationsController =
+      StreamController<List<Conversation>>.broadcast();
+  List<Conversation> _currentConversations = [];
 
-  StudentRepositoryImpl(this._socketService, this.apiConsumer);
+  StudentRepositoryImpl(this._socketService, this.apiConsumer) {
+    _initializeConversationListener();
+  }
+
+  void _initializeConversationListener() {
+    _socketService.onEvent('v1_update_conversation_response', (data) {
+      final updatedConversation = Conversation.fromJson(data['data']);
+
+      final conversationIndex = _currentConversations
+          .indexWhere((conv) => conv.id == updatedConversation.id);
+
+      if (conversationIndex != -1) {
+        _currentConversations[conversationIndex] = updatedConversation;
+      } else {
+        _currentConversations.insert(0, updatedConversation);
+      }
+
+      _conversationsController.add(_currentConversations);
+    });
+  }
 
   Future<void> _reinitializeSocket() async {
     final token = await apiConsumer.getToken();
@@ -47,6 +69,11 @@ class StudentRepositoryImpl implements StudentRepository {
   }
 
   @override
+  Stream<List<Conversation>> getConversationStream() {
+    return _conversationsController.stream;
+  }
+
+  @override
   Future<List<Conversation>> getConversation() async {
     if (!_socketService.isSocketReady) {
       await _reinitializeSocket();
@@ -62,10 +89,13 @@ class StudentRepositoryImpl implements StudentRepository {
       print("Data received: $data");
 
       final studentsData = data['data']['conversations'] as List;
-      final students =
-      studentsData.map((student) => Conversation.fromJson(student)).toList();
+      _currentConversations = studentsData
+          .map((student) => Conversation.fromJson(student))
+          .toList();
 
-      completer.complete(students);
+      _conversationsController.add(_currentConversations);
+
+      completer.complete(_currentConversations);
     });
 
     _socketService.onEvent('v1_get_conversations_error', (error) {
@@ -73,5 +103,10 @@ class StudentRepositoryImpl implements StudentRepository {
     });
 
     return completer.future;
+  }
+
+  @override
+  void dispose() {
+    _conversationsController.close();
   }
 }

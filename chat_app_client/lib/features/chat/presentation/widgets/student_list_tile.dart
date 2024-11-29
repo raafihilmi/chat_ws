@@ -12,7 +12,7 @@ class StudentListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Avatar(avatarUrl: student.avatar, status: 'OFFLINE'),
-      title: Text(student.fullName.length > 10 ? student.fullName.substring(0, 10) + '...' : student.fullName),
+      title: Text(student.fullName),
       subtitle: Text(student.joinSince),
       onTap: () => Navigator.pushNamed(
         context,

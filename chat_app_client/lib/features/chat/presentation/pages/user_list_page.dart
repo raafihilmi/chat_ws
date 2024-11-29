@@ -59,9 +59,7 @@ class _UserListPageState extends State<UserListPage> {
         ),
       ),
       drawer: const MyDrawer(),
-      body: _isSearching
-          ? _buildSearchResults()
-          : _buildConversationList(),
+      body: _isSearching ? _buildSearchResults() : _buildConversationList(),
     );
   }
 
@@ -71,15 +69,17 @@ class _UserListPageState extends State<UserListPage> {
         if (state is StudentLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-
         if (state is StudentLoaded) {
+          if(state.message.isEmpty) {
+            return const Center(child: Text('Tidak ada pengguna'));
+          }
           return ListView.builder(
-            itemCount: state.message.length,
-            itemBuilder: (context, index) {
-              final student = state.message[index];
-              return StudentListTile(student: student);
-            },
-          );
+                  itemCount: state.message.length,
+                  itemBuilder: (context, index) {
+                    final student = state.message[index];
+                    return StudentListTile(student: student);
+                  },
+                );
         }
 
         if (state is StudentError) {
