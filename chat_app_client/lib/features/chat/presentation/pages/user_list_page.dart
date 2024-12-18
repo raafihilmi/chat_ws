@@ -6,7 +6,6 @@ import 'package:chat_app_client/features/chat/presentation/widgets/conversation_
 import 'package:chat_app_client/features/chat/presentation/widgets/search_bar.dart';
 import 'package:chat_app_client/features/chat/presentation/widgets/student_list_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -52,7 +52,7 @@ class ConversationListTile extends StatelessWidget {
         children: [
           if (conversation.isMessageSeen) ...[
             const SizedBox(width: 4),
-            Icon(
+            const Icon(
               Icons.done_all,
               size: 16,
               color: Colors.blue,

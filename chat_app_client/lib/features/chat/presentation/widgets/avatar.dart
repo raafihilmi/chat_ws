@@ -22,7 +22,7 @@ class Avatar extends StatelessWidget {
         CircleAvatar(
           radius: size / 2,
           backgroundColor: avatarUrl.isEmpty
-              ? Color(0xff4E74ED)
+              ? const Color(0xff4E74ED)
               : null, // Customize the color
           child: avatarUrl.isNotEmpty
               ? ClipOval(

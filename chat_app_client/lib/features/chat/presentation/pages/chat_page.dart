@@ -65,44 +65,61 @@ class ChatPageState extends State<ChatPage> {
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        backgroundColor: const Color(0xff387DF7),
-        leadingWidth: 75,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 8),
-          child: GestureDetector(
-            behavior: HitTestBehavior.deferToChild,
-            onTap: () => Navigator.pop(context),
-            child: Row(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xffFFFFFF),
+            border: Border(
+              bottom: BorderSide(
+                color: Color(0xffE5E7EB), // Grey outline stroke
+                width: 1.0, // Thickness of the stroke
+              ),
+            ),
+          ),
+          child: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0, // Remove default shadow for a cleaner look
+            leadingWidth: 75,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: GestureDetector(
+                behavior: HitTestBehavior.deferToChild,
+                onTap: () => Navigator.pop(context),
+                child: Row(
+                  children: [
+                    const Icon(Icons.arrow_back),
+                    Avatar(
+                        avatarUrl: _receiverAvatar!, status: _receiverStatus!)
+                  ],
+                ),
+              ),
+            ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Icon(Icons.arrow_back),
-                Avatar(avatarUrl: _receiverAvatar!, status: _receiverStatus!)
+                Text(_receiverFullName!),
+                Row(
+                  children: [
+                    Text(
+                      _receiverStatus!,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: _receiverStatus == 'ONLINE'
+                            ? Colors.green
+                            : Colors.grey,
+                      ),
+                    ),
+                    Text(
+                      " - Bergabung Sejak $_receiverJoinSince",
+                      style: const TextStyle(fontSize: 10),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(_receiverFullName!),
-            Row(
-              children: [
-                Text(
-                  _receiverStatus!,
-                  style: TextStyle(
-                      fontSize: 10,
-                      color: _receiverStatus == 'ONLINE'
-                          ? Colors.green
-                          : Colors.grey),
-                ),
-                Text(
-                  " - Bergabung Sejak $_receiverJoinSince",
-                  style: const TextStyle(fontSize: 10),
-                ),
-              ],
-            ),
-          ],
         ),
       ),
       body: Column(
@@ -202,7 +219,7 @@ class ChatPageState extends State<ChatPage> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.send),
-                  color: Color(0xff4E74ED),
+                  color: const Color(0xff4E74ED),
                   onPressed: () {
                     if (_messageController.text.isNotEmpty) {
                       context.read<ChatBloc>().add(
