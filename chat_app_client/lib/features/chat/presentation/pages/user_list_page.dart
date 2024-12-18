@@ -43,15 +43,9 @@ class _UserListPageState extends State<UserListPage> {
 
   @override
   Widget build(BuildContext context) {
-    // // Set the status bar color
-    // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    //   statusBarColor: Color.fromARGB(
-    //       255, 192, 26, 26), // Set a color that contrasts with white
-    //   statusBarIconBrightness: Brightness.dark, // Icons are white
-    // ));
 
     return Scaffold(
-      backgroundColor: const Color(0xffFFFFFF), // Page background remains white
+      backgroundColor: const Color(0xffFFFFFF),
       appBar: AppBar(
         elevation: 0,
         forceMaterialTransparency: true,
