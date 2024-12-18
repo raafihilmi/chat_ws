@@ -8,12 +8,12 @@ class Avatar extends StatelessWidget {
   final double statusSize;
 
   const Avatar({
-    Key? key,
+    super.key,
     required this.avatarUrl,
     required this.status,
     this.size = 40.0,
     this.statusSize = 12.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,21 +21,25 @@ class Avatar extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: size / 2,
+          backgroundColor: avatarUrl.isEmpty
+              ? Color(0xff4E74ED)
+              : null, // Customize the color
           child: avatarUrl.isNotEmpty
               ? ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: avatarUrl,
-              placeholder: (context, url) => SizedBox(
-                width: size / 2,
-                height: size / 2,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-              errorWidget: (context, url, error) =>
-              const Icon(Icons.person),
-              fit: BoxFit.cover,
-            ),
-          )
-              : const Icon(Icons.person),
+                  child: CachedNetworkImage(
+                    imageUrl: avatarUrl,
+                    placeholder: (context, url) => SizedBox(
+                      width: size / 2,
+                      height: size / 2,
+                      child: const CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.person),
+                    fit: BoxFit.cover,
+                  ),
+                )
+              : const Icon(Icons.person,
+                  color: Colors.white), // Add contrasting color for the icon
         ),
         Positioned(
           bottom: 0,

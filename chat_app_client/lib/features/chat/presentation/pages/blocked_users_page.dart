@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chat_app_client/features/chat/domain/entities/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../bloc/user/user_bloc.dart';
 
 class BlockedUsersPage extends StatelessWidget {
   const BlockedUsersPage({super.key});
@@ -47,7 +46,7 @@ class BlockedUsersPage extends StatelessWidget {
       log(userId.toString(), name: 'UID');
     }
 
-    BlocProvider.of<BlockeduserBloc>(context).add(GetBlockedUsersEvent());
+    BlocProvider.of<BlockeduserBloc>(context).add(const GetBlockedUsersEvent());
     loadUserId();
     return Scaffold(
       appBar: AppBar(

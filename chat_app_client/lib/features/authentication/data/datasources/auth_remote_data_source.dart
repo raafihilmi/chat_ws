@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:chat_app_client/core/api/api_consumer.dart';
 
 abstract class AuthRemoteDataSource {

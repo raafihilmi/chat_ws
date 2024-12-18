@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthGate extends StatefulWidget {
+  const AuthGate({super.key});
+
   @override
   _AuthGateState createState() => _AuthGateState();
 }

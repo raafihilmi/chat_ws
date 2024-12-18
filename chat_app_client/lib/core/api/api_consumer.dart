@@ -56,13 +56,14 @@ class ApiConsumer {
   }
 
   Future<Map<String, dynamic>> login(String email, password) async {
+    print('tes masuk');
     await Firebase.initializeApp();
     String? fcmToken = await FirebaseMessaging.instance.getToken();
 
     final response = await client.post(Uri.parse('$baseUrl/v1/auth/login'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode(
-            {'email': email, 'password': password, 'role': 'STUDENT'}));
+        body: json
+            .encode({'email': email, 'password': password, 'role': 'STUDENT'}));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class MySearchBar extends StatefulWidget {
   final Function(String) onSearch;
 
-  const MySearchBar({Key? key, required this.onSearch}) : super(key: key);
+  const MySearchBar({super.key, required this.onSearch});
 
   @override
   State<MySearchBar> createState() => _MySearchBarState();
@@ -61,16 +61,30 @@ class _MySearchBarState extends State<MySearchBar> {
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Cari...',
+              hintText: 'Cari Nama di sini ...',
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: _clearSearch,
-              )
+                      icon: const Icon(Icons.clear),
+                      onPressed: _clearSearch,
+                    )
                   : null,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(32),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: Colors.grey, // Light grey border
+                  width: 1.5, // Stroke width for enabled state
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: Color(0xff4E74ED), // Light grey border
+                  width: 2.0, // Stroke width for focused state
+                ),
               ),
               filled: true,
               fillColor: Colors.white,

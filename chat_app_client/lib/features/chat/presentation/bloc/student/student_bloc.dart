@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:chat_app_client/features/chat/data/models/conversation.dart';
 import 'package:chat_app_client/features/chat/domain/entities/message.dart';
 import 'package:chat_app_client/features/chat/domain/entities/student.dart';
 import 'package:chat_app_client/features/chat/domain/repositories/student_repository.dart';
@@ -15,13 +14,12 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
     on<GetStudentsEvent>(_onGetStudents);
     on<SearchStudentsEvent>(_onSearchStudents);
     print('Current state: $state');
-
   }
 
   Future<void> _onGetStudents(
-      GetStudentsEvent event,
-      Emitter<StudentState> emit,
-      ) async {
+    GetStudentsEvent event,
+    Emitter<StudentState> emit,
+  ) async {
     try {
       emit(StudentLoading());
       print('Fetching students with search term: ${event.search}');
@@ -35,9 +33,9 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
   }
 
   Future<void> _onSearchStudents(
-      SearchStudentsEvent event,
-      Emitter<StudentState> emit,
-      ) async {
+    SearchStudentsEvent event,
+    Emitter<StudentState> emit,
+  ) async {
     try {
       emit(StudentLoading());
       final students = await _repository.getStudents(event.search);

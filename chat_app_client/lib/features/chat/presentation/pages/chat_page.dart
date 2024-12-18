@@ -4,6 +4,7 @@ import 'package:chat_app_client/features/chat/presentation/bloc/chat/chat_bloc.d
 import 'package:chat_app_client/features/chat/presentation/widgets/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:chat_app_client/core/components/message_date_header.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -62,9 +63,10 @@ class ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xffFFFFFF),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xff387DF7),
         leadingWidth: 75,
         leading: Padding(
           padding: const EdgeInsets.only(left: 8),
@@ -114,6 +116,9 @@ class ChatPageState extends State<ChatPage> {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   _scrollToBottom();
                 });
+
+                DateTime? lastMessageDate; // Track the last message date
+
                 return Expanded(
                   child: AnimatedPadding(
                     duration: const Duration(milliseconds: 300),
@@ -125,7 +130,27 @@ class ChatPageState extends State<ChatPage> {
                       itemCount: state.message.length,
                       itemBuilder: (context, index) {
                         final message = state.message[index];
-                        return MessageBubble(message: message);
+
+                        // Extract just the year, month, and day from the timestamp
+                        final messageDate = DateTime(
+                          message.messageTimestamp.year,
+                          message.messageTimestamp.month,
+                          message.messageTimestamp.day,
+                        );
+
+                        final showDateHeader = lastMessageDate == null ||
+                            messageDate.isAfter(lastMessageDate!);
+
+                        lastMessageDate = messageDate;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (showDateHeader)
+                              MessageDateHeader(date: message.messageTimestamp),
+                            MessageBubble(message: message),
+                          ],
+                        );
                       },
                     ),
                   ),
@@ -151,21 +176,33 @@ class ChatPageState extends State<ChatPage> {
                       _scrollToBottom();
                     },
                     decoration: InputDecoration(
-                        fillColor: const Color(0xFFC2D6FF),
-                        filled: true,
-                        hintStyle: const TextStyle(color: Colors.grey),
-                        hintText: 'Type a message',
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide:
-                                const BorderSide(color: Color(0xFFC2D6FF))),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: const BorderSide(color: Colors.grey))),
+                      fillColor: const Color(0xFFFFFFFF),
+                      filled: true,
+                      hintStyle: const TextStyle(color: Colors.grey),
+                      hintText: 'Ketik Pesan...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Colors.grey, // Light grey border
+                          width: 1.5, // Stroke width for enabled state
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Color(0xff4E74ED), // Light grey border
+                          width: 2.0, // Stroke width for focused state
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.send),
+                  color: Color(0xff4E74ED),
                   onPressed: () {
                     if (_messageController.text.isNotEmpty) {
                       context.read<ChatBloc>().add(

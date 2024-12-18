@@ -14,20 +14,22 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Color(0xffFFFFFF),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
             children: [
               DrawerHeader(
-                  child: Center(
-                child: Icon(
-                  Icons.message,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 40,
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/logokg.png', // Path to your image
+                    height: 80, // Adjust the size as needed
+                    width: 80,
+                    fit: BoxFit.contain, // Keeps the image proportional
+                  ),
                 ),
-              )),
+              ),
               Padding(
                 padding: const EdgeInsets.only(left: 16),
                 child: Column(

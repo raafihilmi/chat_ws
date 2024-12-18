@@ -1,7 +1,6 @@
 import 'package:chat_app_client/features/chat/domain/entities/chat_message.dart';
 import 'package:flutter/material.dart';
-import 'package:timeago/timeago.dart' as timeago;
-
+import 'package:intl/intl.dart';
 
 class MessageBubble extends StatelessWidget {
   final ChatMessage message;
@@ -13,6 +12,15 @@ class MessageBubble extends StatelessWidget {
     this.showAvatar = true,
   });
 
+  // Formats time as "HH:mm" for message bubble timestamps
+  String formatTime(DateTime timestamp) {
+    // Convert UTC timestamp to GMT+7
+    final gmt7Time = timestamp.toUtc().add(const Duration(hours: 7));
+
+    // Format time as "HH:mm"
+    return DateFormat('HH:mm').format(gmt7Time);
+  }
+
   @override
   Widget build(BuildContext context) {
     final isCurrentUser = message.isMessageFromCurrentUser;
@@ -20,7 +28,8 @@ class MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
-        mainAxisAlignment: isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isCurrentUser && showAvatar) ...[
@@ -32,8 +41,9 @@ class MessageBubble extends StatelessWidget {
           ],
           Flexible(
             child: Column(
-              crossAxisAlignment:
-              isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment: isCurrentUser
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 if (showAvatar)
                   Padding(
@@ -54,31 +64,26 @@ class MessageBubble extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: isCurrentUser
-                        ? const Color(0xFF48CAE4)  // Sender bubble color
-                        : const Color(0xFF0096C7), // Receiver bubble color
+                        ? const Color(0xFF4E74ED) // Sender bubble color
+                        : const Color(0xFFE2E3E8), // Receiver bubble color
                     borderRadius: isCurrentUser
                         ? const BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16),
-                      bottomLeft: Radius.circular(16),
-                    )
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
+                            bottomLeft: Radius.circular(16),
+                          )
                         : const BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16),
-                      bottomRight: Radius.circular(16),
-                    ),
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
+                            bottomRight: Radius.circular(16),
+                          ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        message.message,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    message.message,
+                    style: TextStyle(
+                      color: isCurrentUser ? Colors.white : Colors.black,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 Padding(
@@ -87,7 +92,8 @@ class MessageBubble extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        timeago.format(message.messageTimestamp, allowFromNow: true),
+                        formatTime(
+                            message.messageTimestamp), // Show only "HH:mm"
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.grey[600],
@@ -96,9 +102,7 @@ class MessageBubble extends StatelessWidget {
                       if (isCurrentUser) ...[
                         const SizedBox(width: 4),
                         Icon(
-                          message.isMessageSeen
-                              ? Icons.done_all
-                              : Icons.done,
+                          message.isMessageSeen ? Icons.done_all : Icons.done,
                           size: 16,
                           color: message.isMessageSeen
                               ? Colors.blue

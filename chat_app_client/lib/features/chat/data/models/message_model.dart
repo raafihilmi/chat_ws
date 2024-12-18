@@ -2,16 +2,11 @@ import '../../domain/entities/message.dart';
 
 class MessageModel extends Message {
   const MessageModel({
-    required int senderId,
-    required int receiverId,
-    required String message,
-    required bool isRead,
-  }) : super(
-    senderId: senderId,
-    receiverId: receiverId,
-    message: message,
-    isRead: isRead,
-  );
+    required super.senderId,
+    required super.receiverId,
+    required super.message,
+    required super.isRead,
+  });
 
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(

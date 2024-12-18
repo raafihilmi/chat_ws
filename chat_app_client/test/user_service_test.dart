@@ -2,15 +2,11 @@ import 'package:chat_app_client/core/api/api_consumer.dart';
 import 'package:chat_app_client/features/chat/data/models/user_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'api_helper_test.dart';
 import 'user_service_test.mocks.dart' as userMocks;
-
-@GenerateMocks([http.Client])
-import 'user_service_test.mocks.dart';
 
 void main() {
   late userMocks.MockClient mockClient;
@@ -90,7 +86,7 @@ void main() {
         statusCode: 401,
       );
 
-      expect( await apiConsumer.getBlockedUsers(), throwsException);
+      expect(await apiConsumer.getBlockedUsers(), throwsException);
     });
   });
 
@@ -157,7 +153,7 @@ void main() {
 
   group('reportUser', () {
     test('completes successfully when the user is reported', () async {
-      final reason = 'Inappropriate behavior';
+      const reason = 'Inappropriate behavior';
 
       when(mockClient.post(
         Uri.parse('${apiConsumer.baseUrl}/report/user/1'),
@@ -170,7 +166,7 @@ void main() {
     });
 
     test('throws exception when reporting user fails', () async {
-      final reason = 'Inappropriate behavior';
+      const reason = 'Inappropriate behavior';
 
       when(mockClient.post(
         Uri.parse('${apiConsumer.baseUrl}/report/user/1'),

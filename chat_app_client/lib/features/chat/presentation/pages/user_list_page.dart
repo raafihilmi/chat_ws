@@ -6,6 +6,7 @@ import 'package:chat_app_client/features/chat/presentation/widgets/conversation_
 import 'package:chat_app_client/features/chat/presentation/widgets/search_bar.dart';
 import 'package:chat_app_client/features/chat/presentation/widgets/student_list_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,7 +25,7 @@ class _UserListPageState extends State<UserListPage> {
   @override
   void initState() {
     super.initState();
-    context.read<ConversationBloc>().add(GetConversationEvent(''));
+    context.read<ConversationBloc>().add(const GetConversationEvent(''));
   }
 
   void _handleSearch(String query) {
@@ -32,7 +33,7 @@ class _UserListPageState extends State<UserListPage> {
       setState(() {
         _isSearching = false;
       });
-      context.read<ConversationBloc>().add(GetConversationEvent(''));
+      context.read<ConversationBloc>().add(const GetConversationEvent(''));
     } else {
       setState(() {
         _isSearching = true;
@@ -43,11 +44,21 @@ class _UserListPageState extends State<UserListPage> {
 
   @override
   Widget build(BuildContext context) {
+    // // Set the status bar color
+    // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    //   statusBarColor: Color.fromARGB(
+    //       255, 192, 26, 26), // Set a color that contrasts with white
+    //   statusBarIconBrightness: Brightness.dark, // Icons are white
+    // ));
+
     return Scaffold(
+      backgroundColor: const Color(0xffFFFFFF), // Page background remains white
       appBar: AppBar(
         elevation: 0,
         forceMaterialTransparency: true,
-        title: const Text('Chat'),
+        title: const Text('Inbox & Chat'),
+        centerTitle: true,
+        foregroundColor: Colors.black,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
@@ -70,16 +81,16 @@ class _UserListPageState extends State<UserListPage> {
           return const Center(child: CircularProgressIndicator());
         }
         if (state is StudentLoaded) {
-          if(state.message.isEmpty) {
+          if (state.message.isEmpty) {
             return const Center(child: Text('Tidak ada pengguna'));
           }
           return ListView.builder(
-                  itemCount: state.message.length,
-                  itemBuilder: (context, index) {
-                    final student = state.message[index];
-                    return StudentListTile(student: student);
-                  },
-                );
+            itemCount: state.message.length,
+            itemBuilder: (context, index) {
+              final student = state.message[index];
+              return StudentListTile(student: student);
+            },
+          );
         }
 
         if (state is StudentError) {

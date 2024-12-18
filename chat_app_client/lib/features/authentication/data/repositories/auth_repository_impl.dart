@@ -28,7 +28,7 @@ class AuthRepositoryImpl implements AuthRepository {
       String username, password, email) async {
     try {
       await remoteDataSource.register(username, password, email);
-      return Right(null);
+      return const Right(null);
     } catch (e) {
       return Left(ServerFailure());
     }

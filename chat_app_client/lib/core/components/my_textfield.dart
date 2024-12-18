@@ -6,13 +6,12 @@ class MyTextField extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode? focusNode;
 
-  const MyTextField({
-    super.key,
-    required this.hintText,
-    required this.obscureText,
-    required this.controller,
-    this.focusNode
-  });
+  const MyTextField(
+      {super.key,
+      required this.hintText,
+      required this.obscureText,
+      required this.controller,
+      this.focusNode});
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +24,15 @@ class MyTextField extends StatelessWidget {
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide:
-              BorderSide(color: Colors.lightBlueAccent)),
+              borderSide: const BorderSide(color: Colors.lightBlueAccent)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide:
-            BorderSide(color: Colors.blueAccent),
+            borderSide: const BorderSide(color: Colors.blueAccent),
           ),
           fillColor: Colors.white,
           filled: true,
           hintText: hintText,
-          hintStyle: TextStyle(color: Colors.blueAccent),
+          hintStyle: const TextStyle(color: Colors.blueAccent),
         ),
       ),
     );

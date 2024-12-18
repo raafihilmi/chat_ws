@@ -1,4 +1,3 @@
-import 'package:chat_app_client/features/chat/domain/usecases/report_user.dart';
 import 'package:chat_app_client/features/chat/presentation/bloc/user/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,10 +10,10 @@ class ChatBubble extends StatelessWidget {
 
   const ChatBubble(
       {super.key,
-        required this.message,
-        required this.isCurrentUser,
-        required this.userId,
-        required this.messageId});
+      required this.message,
+      required this.isCurrentUser,
+      required this.userId,
+      required this.messageId});
 
   // show options
   void _showOptions(BuildContext context, String messageId, int user) {
@@ -23,31 +22,31 @@ class ChatBubble extends StatelessWidget {
       builder: (context) {
         return SafeArea(
             child: Wrap(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.report),
-                  title: const Text("Report"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _reportMessage(context, messageId, userId);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.block),
-                  title: const Text("Block User"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                    _blockUser(context, userId);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.cancel),
-                  title: const Text("Cancel"),
-                  onTap: () => Navigator.pop(context),
-                )
-              ],
-            ));
+          children: [
+            ListTile(
+              leading: const Icon(Icons.report),
+              title: const Text("Report"),
+              onTap: () {
+                Navigator.pop(context);
+                _reportMessage(context, messageId, userId);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.block),
+              title: const Text("Block User"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                _blockUser(context, userId);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.cancel),
+              title: const Text("Cancel"),
+              onTap: () => Navigator.pop(context),
+            )
+          ],
+        ));
       },
     );
   }
@@ -65,10 +64,12 @@ class ChatBubble extends StatelessWidget {
               child: const Text("Cancel")),
           TextButton(
               onPressed: () {
-                context.read<UserBloc>().add(ReportUserEvent(reportUserId: userId,reason: 'spam'));
+                context
+                    .read<UserBloc>()
+                    .add(ReportUserEvent(reportUserId: userId, reason: 'spam'));
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text("Message Reported")));
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Message Reported")));
               },
               child: const Text("Report"))
         ],
@@ -90,15 +91,14 @@ class ChatBubble extends StatelessWidget {
               onPressed: () {
                 context.read<UserBloc>().add(BlockUserEvent(userId));
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text("User has been block")));
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("User has been block")));
               },
               child: const Text("Block"))
         ],
       ),
     );
   }
-
 
   // block user
   @override

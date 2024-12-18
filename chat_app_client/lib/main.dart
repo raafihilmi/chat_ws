@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:chat_app_client/features/authentication/presentation/bloc/auth_bloc.dart';
 import 'package:chat_app_client/features/authentication/presentation/pages/auth_gate.dart';
 import 'package:chat_app_client/features/authentication/presentation/pages/login_page.dart';
@@ -57,7 +55,7 @@ void main() async {
   });
 
   await di.init();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -77,11 +75,11 @@ class MyApp extends StatelessWidget {
             create: (context) => di.sl<BlockeduserBloc>(),
           ),
           BlocProvider<StudentBloc>(
-            create: (context) =>
-                di.sl<StudentBloc>(),
+            create: (context) => di.sl<StudentBloc>(),
           ),
           BlocProvider<ConversationBloc>(
-            create: (context) => di.sl<ConversationBloc>()..add(GetConversationEvent('')),
+            create: (context) =>
+                di.sl<ConversationBloc>()..add(const GetConversationEvent('')),
           ),
           BlocProvider<UserBloc>(
             create: (context) => di.sl<UserBloc>(),
@@ -96,12 +94,12 @@ class MyApp extends StatelessWidget {
           ),
           initialRoute: '/auth',
           routes: {
-            '/auth': (context) => AuthGate(),
+            '/auth': (context) => const AuthGate(),
             '/login': (context) => LoginPage(),
             '/register': (context) => RegisterPage(),
-            '/chat': (context) => ChatPage(),
-            '/blocked': (context) => BlockedUsersPage(),
-            '/users': (context) => UserListPage()
+            '/chat': (context) => const ChatPage(),
+            '/blocked': (context) => const BlockedUsersPage(),
+            '/users': (context) => const UserListPage()
           },
         ));
   }

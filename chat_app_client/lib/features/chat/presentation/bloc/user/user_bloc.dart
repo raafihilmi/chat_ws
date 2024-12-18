@@ -1,7 +1,5 @@
 import 'package:chat_app_client/features/chat/domain/usecases/block_user.dart';
-import 'package:chat_app_client/features/chat/domain/usecases/get_blocked_users.dart';
 import 'package:chat_app_client/features/chat/domain/usecases/report_user.dart';
-import 'package:chat_app_client/features/chat/domain/usecases/unblock_user.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -39,8 +37,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     );
   }
 
-
-
   Future<void> _onBlockUserEvent(
       BlockUserEvent event, Emitter<UserState> emit) async {
     emit(UserLoading());
@@ -52,7 +48,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           emit(const UserActionSuccess(message: 'User blocked successfully')),
     );
   }
-
 
   Future<void> _onReportUserEvent(
       ReportUserEvent event, Emitter<UserState> emit) async {

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:chat_app_client/core/usecases/usecase.dart';
 import 'package:chat_app_client/features/chat/domain/repositories/user_repository.dart';
 import 'package:dartz/dartz.dart';
