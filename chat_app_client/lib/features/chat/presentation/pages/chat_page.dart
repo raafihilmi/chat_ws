@@ -69,6 +69,7 @@ class ChatPageState extends State<ChatPage> {
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: AppBar(
           backgroundColor: Colors.white,
+          forceMaterialTransparency: true,
           elevation: 0,
           leadingWidth: 75,
           leading: Padding(
